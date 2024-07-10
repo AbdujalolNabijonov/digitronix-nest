@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class AppService {
+export class DigitonixBatchService {
   getHello(): string {
-    return 'Hello World!';
+    return 'Hello World! i am assistant analyzer';
   }
+
 }

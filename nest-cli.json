@@ -1,8 +1,32 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
+  "sourceRoot": "apps/digitronix/src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/digitronix/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/digitronix",
+  "projects": {
+    "digitronix": {
+      "type": "application",
+      "root": "apps/digitronix",
+      "entryFile": "main",
+      "sourceRoot": "apps/digitronix/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/digitronix/tsconfig.app.json"
+      }
+    },
+    "digitonix-batch": {
+      "type": "application",
+      "root": "apps/digitonix-batch",
+      "entryFile": "main",
+      "sourceRoot": "apps/digitonix-batch/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/digitonix-batch/tsconfig.app.json"
+      }
+    }
   }
 }

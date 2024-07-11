@@ -18,6 +18,7 @@ import AppResolver from './app.resolver';
       uploads:false,
       formatError:(err:any)=>{
         console.log("Graphql error", err)
+        return err.message
       }
     }),
     ComponentsModule,

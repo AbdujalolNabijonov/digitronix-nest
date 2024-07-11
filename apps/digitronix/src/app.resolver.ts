@@ -6,10 +6,8 @@ class AppResolver {
     constructor(private readonly appService: AppService) { };
 
     @Query(returns => String)
-    public greeting(
-        @Args("input") propertyId: string
-    ): string {
-        const msg = `This is GraphQL API ${propertyId}`
+    public greeting(): string {
+        const msg = `This is GraphQL API`
         return msg
     }
 }

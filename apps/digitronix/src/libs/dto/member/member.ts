@@ -1,6 +1,7 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { ObjectId } from "mongoose";
 import { MemberAuthType, MemberType } from "../../enums/member.enum";
+import { IsOptional } from "class-validator";
 
 @ObjectType()
 export class Member {
@@ -67,8 +68,9 @@ export class Member {
     @Field(() => Number)
     memberBlocks: number
 
-    @Field(() => String)
-    accessToken: string
+    @IsOptional()
+    @Field(() => String, {nullable:true})
+    accessToken?: string
 
     @Field(() => Date, { nullable: true })
     deletedAt?: Date
@@ -78,4 +80,19 @@ export class Member {
 
     @Field(() => Date)
     updatedAt: Date
+}
+
+@ObjectType()
+class TotalCount {
+    @Field(() => Number)
+    total: number
+}
+
+@ObjectType()
+export class Members {
+    @Field(() => [Member])
+    list: Member[]
+
+    @Field(() => [TotalCount])
+    metaCounter: TotalCount[]
 }

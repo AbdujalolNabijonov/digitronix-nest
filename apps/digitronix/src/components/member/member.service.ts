@@ -1,10 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { Member } from '../../libs/dto/member/member';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Member, Members } from '../../libs/dto/member/member';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { LoginInput, MemberInput } from '../../libs/dto/member/member.input';
+import { LoginInput, MemberInput, MemberInquiry } from '../../libs/dto/member/member.input';
 import { AuthService } from '../auth/auth.service';
 import { Message } from '../../libs/common';
+import { T } from '../../libs/types/general';
+import { Direction } from '../../libs/enums/common.enum';
+import { UpdateMemberInquiry } from '../../libs/dto/member/member.update';
+import { shapeIntoMongoObjectId } from '../../libs/types/config';
 
 @Injectable()
 export class MemberService {
@@ -44,4 +48,37 @@ export class MemberService {
         }
     }
 
+
+    //ADMIN
+    public async getAllMembersByAdmin(input: MemberInquiry): Promise<Members> {
+        const { memberStatus, memberType, text } = input?.search;
+        const { page, limit, direction, sort } = input
+
+        const match: T = {};
+        if (memberStatus) match.memberStatus = memberStatus;
+        if (memberType) match.memberType = memberType;
+        if (text) match.memberNick = { $regex: new RegExp(text, "i") };
+
+        const sortFilter: T = { [sort ?? "createdAt"]: direction ?? Direction.DESC }
+
+        const list = await this.memberModel.aggregate([
+            { $match: match },
+            { $sort: sortFilter },
+            {
+                $facet: {
+                    list: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+                    metaCounter: [{ $count: "total" }]
+                }
+            }
+        ]).exec()
+        if (!list.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND)
+        return list[0]
+    }
+
+    public async updateMemberByAdmin(input: UpdateMemberInquiry): Promise<Member> {
+        input._id = shapeIntoMongoObjectId(input._id)
+        const result: Member = await this.memberModel.findOneAndUpdate({ _id: input._id }, input, { returnDocument: "after" }).exec();
+        if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED)
+        return result
+    }
 }

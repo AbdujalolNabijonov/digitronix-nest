@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from "bcryptjs"
-import { MemberInput } from '../../libs/dto/member/member.input';
 import { T } from '../../libs/types/general';
 import { Member } from '../../libs/dto/member/member';
+import { shapeIntoMongoObjectId } from '../../libs/types/config';
 
 @Injectable()
 export class AuthService {
@@ -33,6 +33,13 @@ export class AuthService {
     private async createJwt(payload: T): Promise<string> {
         const token: string = await this.jwtService.signAsync(payload)
         return token
+    }
+
+    public async jwtVerify(token: string): Promise<Member> {
+        const member: Member = await this.jwtService.verifyAsync(token);
+        member._id = shapeIntoMongoObjectId(member._id)
+        return member
+
     }
 
 }

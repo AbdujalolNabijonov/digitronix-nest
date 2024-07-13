@@ -67,6 +67,9 @@ export class Member {
     @Field(() => Number)
     memberBlocks: number
 
+    @Field(() => String)
+    accessToken: string
+
     @Field(() => Date, { nullable: true })
     deletedAt?: Date
 

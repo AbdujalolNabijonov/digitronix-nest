@@ -13,6 +13,11 @@ export class MemberInput {
     @Field(() => String)
     memberPhone: string
 
+    @IsNotEmpty()
+    @Length(5, 20)
+    @Field(() => String)
+    memberPassword: string
+
     @IsOptional()
     @Field(() => MemberType, { nullable: true })
     memberType?: MemberType

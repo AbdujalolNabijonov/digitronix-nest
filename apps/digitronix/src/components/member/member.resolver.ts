@@ -8,11 +8,10 @@ import { Member } from '../../libs/dto/member/member';
 export class MemberResolver {
     constructor(private readonly memberService: MemberService) { }
 
-    @Mutation(() => String)
+    @Mutation(() => Member)
     public async signup(
         @Args("input") input: MemberInput
-    ): Promise<string> {
-
-        return "salom"
+    ): Promise<Member | Error> {
+        return await this.memberService.signup(input)
     }
 }

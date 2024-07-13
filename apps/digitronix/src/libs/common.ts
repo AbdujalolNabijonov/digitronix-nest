@@ -6,6 +6,7 @@ export enum Message {
     REMOVE_FAILED = "Remove failed!",
     UPLOAD_FAILDED = "Upload failed",
     BAD_REQUEST = "Bad Request!",
+    USED_MEMBER_OR_PHONE = "Used member or phone!",
 
     NO_MEMBER_NICK = 'No member with that member nick!',
     BLOCKED_USER = 'You have blocked!',

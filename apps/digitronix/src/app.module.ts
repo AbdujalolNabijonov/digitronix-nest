@@ -14,11 +14,15 @@ import AppResolver from './app.resolver';
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       playground: true,
-      autoSchemaFile:true,
-      uploads:false,
-      formatError:(err:any)=>{
-        console.log("Graphql error", err)
-        return err.message
+      autoSchemaFile: true,
+      uploads: false,
+      formatError: (error: any) => {
+        const graphqlFormattedError = {
+          code: error?.extensions.code,
+          message: error?.extensions?.execption?.response?.message || error?.extensions?.response?.message || error?.message
+        }
+        console.log("GRAPHQL GLOBAL ERR: ", graphqlFormattedError)
+        return graphqlFormattedError;
       }
     }),
     ComponentsModule,

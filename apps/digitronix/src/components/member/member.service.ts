@@ -10,6 +10,7 @@ import { Direction } from '../../libs/enums/common.enum';
 import { UpdateMemberInquiry } from '../../libs/dto/member/member.update';
 import { shapeIntoMongoObjectId } from '../../libs/types/config';
 import { MemberStatus } from '../../libs/types/member';
+import { MemberType } from '../../libs/enums/member.enum';
 
 @Injectable()
 export class MemberService {
@@ -55,12 +56,9 @@ export class MemberService {
             memberStatus: { $in: [MemberStatus.ACTIVE, MemberStatus.BLOCK] }
         }
 
-        let member: Member;
+        const member = await this.memberModel.findOne(search).exec();
         if (memberId) {
-            //view
-            //like
-        } else {
-            member = await this.memberModel.findOne(search).exec();
+
         }
         if (!member) throw new InternalServerErrorException(Message.NO_DATA_FOUND)
         return member
@@ -78,6 +76,34 @@ export class MemberService {
         if (!member) throw new InternalServerErrorException(Message.UPDATE_FAILED);
         member.accessToken = await this.authService.jwtGenerator(member);
         return member
+    }
+
+    public async getMembers(input: MemberInquiry, memberId: ObjectId): Promise<Members> {
+        const { memberType, text } = input.search;
+        const { page, limit, direction, sort } = input
+        
+        const match: T = {}
+        match.memberStatus = MemberStatus.ACTIVE;
+        if (memberType) match.memberType = memberType;
+        if (text) match.memberNick = { $regex: new RegExp(text, "i") }
+
+        const sortFilter: T = { [sort ?? "createdAt"]: direction ?? Direction.DESC }
+        const members = await this.memberModel.aggregate([
+            { $match: match },
+            { $sort: sortFilter },
+            {
+                $facet: {
+                    list: [
+                        { $skip: (page - 1) * limit },
+                        { $limit: limit },
+                        //like
+                    ],
+                    metaCounter: [{ $count: "total" }]
+                }
+            }
+        ]).exec()
+        if (!members.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND)
+        return members[0]
     }
 
     //ADMIN

@@ -51,7 +51,16 @@ export class MemberResolver {
         console.log("Mutation: updateMember")
         return await this.memberService.updateMember(input)
     }
-    public async getMembers() { }
+
+    @UseGuards(WithoutGuards)
+    @Query(returns=>Members)
+    public async getMembers(
+        @Args("input") input:MemberInquiry,
+        @AuthMember("_id") memberId:ObjectId
+    ) { 
+        console.log("Query: getMembers");
+        return await this.memberService.getMembers(input, memberId)
+    }
 
     //ADMIN
     @Roles(MemberGroup.ADMIN)

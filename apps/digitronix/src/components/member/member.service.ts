@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Member, Members } from '../../libs/dto/member/member';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { LoginInput, MemberInput, MemberInquiry } from '../../libs/dto/member/member.input';
 import { AuthService } from '../auth/auth.service';
 import { Message } from '../../libs/common';
@@ -9,6 +9,7 @@ import { T } from '../../libs/types/general';
 import { Direction } from '../../libs/enums/common.enum';
 import { UpdateMemberInquiry } from '../../libs/dto/member/member.update';
 import { shapeIntoMongoObjectId } from '../../libs/types/config';
+import { MemberStatus } from '../../libs/types/member';
 
 @Injectable()
 export class MemberService {
@@ -48,6 +49,36 @@ export class MemberService {
         }
     }
 
+    public async getMember(target: ObjectId, memberId: ObjectId): Promise<Member> {
+        const search = {
+            _id: target,
+            memberStatus: { $in: [MemberStatus.ACTIVE, MemberStatus.BLOCK] }
+        }
+
+        let member: Member;
+        if (memberId) {
+            //view
+            //like
+        } else {
+            member = await this.memberModel.findOne(search).exec();
+        }
+        if (!member) throw new InternalServerErrorException(Message.NO_DATA_FOUND)
+        return member
+    }
+
+    public async updateMember(input: UpdateMemberInquiry): Promise<Member> {
+        const member = await this.memberModel.findOneAndUpdate(
+            {
+                _id: input._id,
+                memberStatus: MemberStatus.ACTIVE
+            },
+            input,
+            { returnDocument: "after" }
+        ).exec();
+        if (!member) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+        member.accessToken = await this.authService.jwtGenerator(member);
+        return member
+    }
 
     //ADMIN
     public async getAllMembersByAdmin(input: MemberInquiry): Promise<Members> {

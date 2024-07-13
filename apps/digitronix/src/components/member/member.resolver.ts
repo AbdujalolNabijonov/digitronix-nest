@@ -7,6 +7,10 @@ import { Roles } from '../auth/decorators/auth.roles';
 import { MemberGroup } from '../../libs/types/member';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UpdateMemberInquiry } from '../../libs/dto/member/member.update';
+import { WithoutGuards } from '../auth/guards/without.guard';
+import { AuthMember } from '../auth/decorators/auth.member';
+import { ObjectId } from 'mongoose';
+import { shapeIntoMongoObjectId } from '../../libs/types/config';
 
 
 @Resolver()
@@ -28,6 +32,26 @@ export class MemberResolver {
         console.log("Query: Login")
         return await this.memberService.login(input)
     }
+
+    @UseGuards(WithoutGuards)
+    @Query(() => Member)
+    public async getMember(
+        @Args("input") input: String,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Member> {
+        console.log("Query: getMember");
+        const target = shapeIntoMongoObjectId(input);
+        return await this.memberService.getMember(target, memberId)
+    }
+
+    @Mutation(() => Member)
+    public async updateMember(
+        @Args("input") input: UpdateMemberInquiry
+    ): Promise<Member> {
+        console.log("Mutation: updateMember")
+        return await this.memberService.updateMember(input)
+    }
+    public async getMembers() { }
 
     //ADMIN
     @Roles(MemberGroup.ADMIN)

@@ -2,6 +2,7 @@ import { Field, ObjectType } from "@nestjs/graphql";
 import { ObjectId } from "mongoose";
 import { MemberAuthType, MemberType } from "../../enums/member.enum";
 import { IsOptional } from "class-validator";
+import { MemberStatus } from "../../types/member";
 
 @ObjectType()
 export class Member {
@@ -10,6 +11,9 @@ export class Member {
 
     @Field(() => String, { nullable: true })
     memberFullName?: string
+
+    @Field(() => MemberStatus)
+    memberStatus: string
 
     @Field(() => MemberType)
     memberType: MemberType
@@ -69,7 +73,7 @@ export class Member {
     memberBlocks: number
 
     @IsOptional()
-    @Field(() => String, {nullable:true})
+    @Field(() => String, { nullable: true })
     accessToken?: string
 
     @Field(() => Date, { nullable: true })

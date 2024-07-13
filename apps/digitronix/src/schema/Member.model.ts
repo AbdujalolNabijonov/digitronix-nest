@@ -1,9 +1,15 @@
 import { Schema } from "mongoose"
 import { MemberAuthType, MemberType } from "../libs/enums/member.enum"
+import { MemberStatus } from "../libs/types/member"
 
 const MemberSchema = new Schema({
     memberFullName: {
         type: String
+    },
+    memberStatus: {
+        type: String,
+        enum: MemberStatus,
+        default: MemberStatus.ACTIVE
     },
     memberType: {
         type: String,

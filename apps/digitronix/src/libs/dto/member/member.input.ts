@@ -5,7 +5,7 @@ import { MemberAuthType, MemberType } from "../../enums/member.enum";
 @InputType()
 export class MemberInput {
     @IsNotEmpty()
-    @Length(4, 15)
+    @Length(4, 20)
     @Field(() => String)
     memberNick: string
 
@@ -25,4 +25,17 @@ export class MemberInput {
     @IsOptional()
     @Field(() => MemberAuthType, { nullable: true })
     memberAuthType?: MemberAuthType
+}
+
+@InputType()
+export class LoginInput {
+    @IsNotEmpty()
+    @Length(5, 20)
+    @Field(() => String)
+    memberNick: string
+
+    @IsNotEmpty()
+    @Length(5, 20)
+    @Field(() => String)
+    memberPassword: string
 }

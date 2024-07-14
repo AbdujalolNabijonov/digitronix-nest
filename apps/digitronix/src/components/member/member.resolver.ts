@@ -14,7 +14,7 @@ import { avaibleMimeType, getSerialNumber, shapeIntoMongoObjectId } from '../../
 import { GraphQLUpload, FileUpload } from "graphql-upload"
 import { Message } from '../../libs/common';
 import { createWriteStream } from 'fs';
-import AuthGuard from '../auth/guards/auth.guard';
+import { AuthGuard } from '../auth/guards/auth.guard';
 
 
 @Resolver()
@@ -85,6 +85,17 @@ export class MemberResolver {
     ): Promise<Member> {
         console.log("Mutation: updateMemberByAdmin")
         return await this.memberService.updateMemberByAdmin(input)
+    }
+
+    @UseGuards(AuthGuard)
+    @Mutation(() => Member)
+    public async likeMember(
+        @Args("input") input: String,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Member> {
+        console.log("Mutation: likeMember");
+        const likeTargetId = shapeIntoMongoObjectId(input)
+        return await this.memberService.likeMember(likeTargetId, memberId)
     }
 
 

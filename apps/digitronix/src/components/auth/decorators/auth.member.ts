@@ -7,7 +7,7 @@ export const AuthMember = createParamDecorator((data: string, conetxt: Execution
     if (requestType === "graphql") {
         request = conetxt.getArgByIndex(2).req;
         if (request.body.authMember) {
-            request.body.authMember.authorization = request.body.headers.authorization
+            request.body.authMember.authorization = request.body.headers?.authorization
         }
     } else request = conetxt.switchToHttp().getRequest();
 

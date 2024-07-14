@@ -3,6 +3,7 @@ import { ObjectId } from "mongoose";
 import { MemberAuthType, MemberType } from "../../enums/member.enum";
 import { IsOptional } from "class-validator";
 import { MemberStatus } from "../../types/member";
+import { MeLiked } from "../like/like";
 
 @ObjectType()
 export class Member {
@@ -75,6 +76,10 @@ export class Member {
     @IsOptional()
     @Field(() => String, { nullable: true })
     accessToken?: string
+
+
+    @Field(() => [MeLiked], { nullable: true })
+    meLiked?: MeLiked[]
 
     @Field(() => Date, { nullable: true })
     deletedAt?: Date

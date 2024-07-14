@@ -45,5 +45,9 @@ export class UpdateMemberInquiry {
     @Field(() => String, { nullable: true })
     memberPhone?: string
 
+    @IsOptional()
+    @Field(() => Number, { nullable: true })
+    memberLikes?: number
+
     deletedAt?: Date
 }

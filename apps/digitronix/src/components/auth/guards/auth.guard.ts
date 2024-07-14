@@ -1,26 +1,29 @@
-import { BadRequestException, CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import { GqlContextType } from "@nestjs/graphql";
-import { Message } from "apps/digitronix/src/libs/common";
-import { AuthService } from "../auth.service";
+import { BadRequestException, CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { AuthService } from '../auth.service';
+import { Message } from 'apps/digitronix/src/libs/common';
+
 
 @Injectable()
-class AuthGuard implements CanActivate {
-    constructor(private readonly authService: AuthService) { }
+export class AuthGuard implements CanActivate {
+    constructor(private authService: AuthService) { }
 
-    public async canActivate(context: ExecutionContext): Promise<boolean> {
-        const requestType = context.getType<GqlContextType>();
-        if (requestType === "graphql") {
-            const barearToken = context.getArgByIndex(2).req.headers.authorization;
-            if (!barearToken) new BadRequestException(Message.TOKEN_NOT_EXIST);
-            const token = barearToken.split(" ")[1]
-            const member = await this.authService.jwtVerify(token);
+    async canActivate(context: ExecutionContext | any): Promise<boolean> {
+        console.info('--- @guard() Authentication [AuthGuard] ---');
+        if (context.contextType === 'graphql') {
+            const request = context.getArgByIndex(2).req;
 
-            if (!member || !token) throw new BadRequestException(Message.NOT_AUTHENTICATED);
+            const bearerToken = request.headers.authorization;
+            if (!bearerToken) throw new BadRequestException(Message.TOKEN_NOT_EXIST);
+            const token = bearerToken.split(' ')[1],
+                authMember = await this.authService.jwtVerify(token);
+            if (!authMember) throw new UnauthorizedException(Message.NOT_AUTHENTICATED);
 
-            context.getArgByIndex(2).req.body.authMember = member;
-            return true
+            console.log('memberNick[auth] =>', authMember.memberNick);
+            request.body.authMember = authMember;
+
+            return true;
         }
+
+        // description => http, rpc, gprs and etc aren't ignored
     }
 }
-
-export default AuthGuard

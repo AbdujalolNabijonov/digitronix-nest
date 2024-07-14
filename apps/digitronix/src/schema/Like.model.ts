@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { LikeGroup } from "../libs/enums/member.enum";
+import { LikeGroup } from "../libs/enums/like.enum";
 
 const LikeSchema = new Schema({
     likeTargetId: {

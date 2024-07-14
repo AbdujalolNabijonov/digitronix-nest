@@ -10,17 +10,21 @@ import { Direction } from '../../libs/enums/common.enum';
 import { UpdateMemberInquiry } from '../../libs/dto/member/member.update';
 import { lookupAuthMemberLiked, shapeIntoMongoObjectId } from '../../libs/types/config';
 import { MemberStatus } from '../../libs/types/member';
-import {MemberType } from '../../libs/enums/member.enum';
+import { MemberType } from '../../libs/enums/member.enum';
 import { LikeService } from '../like/like.service';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
+import { ViewService } from '../view/view.service';
+import { ViewGroup } from '../../libs/enums/view.enum';
+import { ViewInput } from '../../libs/dto/view/view.input';
 
 @Injectable()
 export class MemberService {
     constructor(
         @InjectModel("Member") private readonly memberModel: Model<Member>,
         private readonly authService: AuthService,
-        private readonly likeService: LikeService
+        private readonly likeService: LikeService,
+        private readonly viewService: ViewService
     ) { };
 
     public async signup(input: MemberInput): Promise<Member | Error> {
@@ -77,6 +81,13 @@ export class MemberService {
                 }]
             }
             //view
+            const viewInput: ViewInput = {
+                viewTargetId: target,
+                memberId,
+                viewGroup: ViewGroup.MEMBER
+            }
+            const recordedView = await this.viewService.recordView(viewInput)
+            member.memberViews++
             //follow
         }
         if (!member) throw new InternalServerErrorException(Message.NO_DATA_FOUND)

@@ -1,7 +1,7 @@
 import { Schema } from "mongoose";
 import { ViewGroup } from "../libs/enums/view.enum";
 
-const viewSchema = new Schema({
+const ViewSchema = new Schema({
     viewTargetId: {
         type: Schema.Types.ObjectId,
         required: true
@@ -17,6 +17,6 @@ const viewSchema = new Schema({
     }
 })
 
-viewSchema.index({ viewTargetId: 1, memberId: 1 }, { unique: true })
+ViewSchema.index({ viewTargetId: 1, memberId: 1 }, { unique: true })
 
-export default viewSchema
+export default ViewSchema

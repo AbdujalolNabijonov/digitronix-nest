@@ -10,7 +10,11 @@ import { UpdateMemberInquiry } from '../../libs/dto/member/member.update';
 import { WithoutGuards } from '../auth/guards/without.guard';
 import { AuthMember } from '../auth/decorators/auth.member';
 import { ObjectId } from 'mongoose';
-import { shapeIntoMongoObjectId } from '../../libs/types/config';
+import { avaibleMimeType, getSerialNumber, shapeIntoMongoObjectId } from '../../libs/types/config';
+import { GraphQLUpload, FileUpload } from "graphql-upload"
+import { Message } from '../../libs/common';
+import { createWriteStream } from 'fs';
+import AuthGuard from '../auth/guards/auth.guard';
 
 
 @Resolver()
@@ -53,11 +57,11 @@ export class MemberResolver {
     }
 
     @UseGuards(WithoutGuards)
-    @Query(returns=>Members)
+    @Query(returns => Members)
     public async getMembers(
-        @Args("input") input:MemberInquiry,
-        @AuthMember("_id") memberId:ObjectId
-    ) { 
+        @Args("input") input: MemberInquiry,
+        @AuthMember("_id") memberId: ObjectId
+    ) {
         console.log("Query: getMembers");
         return await this.memberService.getMembers(input, memberId)
     }
@@ -81,5 +85,75 @@ export class MemberResolver {
     ): Promise<Member> {
         console.log("Mutation: updateMemberByAdmin")
         return await this.memberService.updateMemberByAdmin(input)
+    }
+
+
+    //Image Uploader
+    @UseGuards(AuthGuard)
+    @Mutation(() => String)
+    public async imageUploader(
+        @Args({ name: 'file', type: () => GraphQLUpload })
+        { createReadStream, filename, mimetype }: FileUpload,
+        @Args('target') target: String,
+    ): Promise<String> {
+        console.log("Mutation: imageUpload");
+
+        const stream = createReadStream()
+
+        if (!filename) new Error(Message.UPLOAD_FAILDED);
+        const isMatchedFomat = avaibleMimeType.includes(mimetype);
+        if (!isMatchedFomat) throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
+
+        const createRandomName = getSerialNumber(filename);
+        const path = `uploads/${target}/${createRandomName}`;
+
+        const result = await new Promise((resolve, reject) => {
+            stream
+                .pipe(createWriteStream(path))
+                .on("finish", async () => resolve(true))
+                .on("error", () => reject(false))
+        })
+
+        if (!result) throw new Error(Message.UPLOAD_FAILDED);
+        return path
+    }
+
+    @UseGuards(AuthGuard)
+    @Mutation(() => [String])
+    public async imagesUploader(
+        @Args({ name: "files", type: () => [GraphQLUpload] })
+        files: Promise<FileUpload>[],
+        @Args("target") target: String
+    ): Promise<string[]> {
+        console.log("Mutation: ImagesUploader");
+
+        const uploadedFiles = [];
+        const promiseList = files.map(async (img: Promise<FileUpload>, index: number): Promise<Promise<void>> => {
+            try {
+                const { createReadStream, mimetype, filename } = await img;
+                const stream = createReadStream();
+
+                if (!filename) throw new Error(Message.UPLOAD_FAILDED);
+                const isMatchedFormat = avaibleMimeType.includes(mimetype);
+                if (!isMatchedFormat) throw new Error(Message.PROVIDE_ALLOWED_FORMAT);
+
+                const randomName = getSerialNumber(filename)
+                const path = `uploads/${target}/${randomName}`
+
+                const result = await new Promise((resolve, reject) => {
+                    stream
+                        .pipe(createWriteStream(path))
+                        .on("finish", async () => resolve(true))
+                        .on("error", () => reject(false))
+                })
+                if (!result) throw new Error(Message.UPDATE_FAILED)
+                uploadedFiles[index] = path
+            } catch (err) {
+                console.log('Error, File missing', err)
+            }
+        })
+
+        await Promise.all(promiseList);
+        return uploadedFiles
     }
 }

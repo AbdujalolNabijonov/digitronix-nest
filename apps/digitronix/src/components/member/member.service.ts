@@ -87,7 +87,10 @@ export class MemberService {
                 viewGroup: ViewGroup.MEMBER
             }
             const recordedView = await this.viewService.recordView(viewInput)
-            member.memberViews++
+            if (recordedView) {
+                await this.memberModel.findOneAndUpdate({ _id: target }, { $inc: { memberViews: 1 } }).exec()
+                member.memberViews++
+            }
             //follow
         }
         if (!member) throw new InternalServerErrorException(Message.NO_DATA_FOUND)

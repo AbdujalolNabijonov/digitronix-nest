@@ -1,6 +1,6 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { ProductService } from './product.service';
-import { Computer, Peripheral} from '../../libs/dto/product/product';
+import { Computer, Peripheral } from '../../libs/dto/product/product';
 import { Roles } from '../auth/decorators/auth.roles';
 import { MemberGroup } from '../../libs/types/member';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -8,6 +8,9 @@ import { UseGuards } from '@nestjs/common';
 import { ProductPCInput, ProductPerpheralInput } from '../../libs/dto/product/product.input';
 import { AuthMember } from '../auth/decorators/auth.member';
 import { ObjectId } from 'mongoose';
+import { WithoutGuards } from '../auth/guards/without.guard';
+import { shapeIntoMongoObjectId } from '../../libs/types/config';
+import { UpdateProductPc, UpdateProductPeripheral } from '../../libs/dto/product/product.update';
 
 @Resolver()
 export class ProductResolver {
@@ -21,7 +24,7 @@ export class ProductResolver {
     public async createPcProduct(
         @Args("input") input: ProductPCInput,
         @AuthMember("_id") memberId: ObjectId
-    ): Promise<Computer> {
+    ): Promise<Computer | Error> {
         console.log("Mutation: createPcProduct");
         input.memberId = memberId;
         return await this.productService.createPcProduct(input)
@@ -33,9 +36,69 @@ export class ProductResolver {
     public async createPeripheral(
         @Args("input") input: ProductPerpheralInput,
         @AuthMember("_id") memberId: ObjectId
-    ): Promise<Peripheral> {
+    ): Promise<Peripheral | Error> {
         console.log("Mutation: createPeripheral")
         input.memberId = memberId
         return await this.productService.createPeripheral(input)
     }
+
+    @UseGuards(WithoutGuards)
+    @Query(() => Computer)
+    public async getProductPc(
+        @Args("input") input: String,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Computer> {
+        console.log("Query: getProductPc");
+        const targetId = shapeIntoMongoObjectId(input)
+        return await this.productService.getProductPc(targetId, memberId)
+    }
+
+    @UseGuards(WithoutGuards)
+    @Query(returns => Peripheral)
+    public async getProductPeripheral(
+        @Args("input") input: String,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Peripheral> {
+        console.log("Query: getProductPeripheral");
+        const targetId = shapeIntoMongoObjectId(input)
+        return await this.productService.getProductPeripheral(targetId, memberId)
+    }
+
+    @Roles(MemberGroup.SELLER)
+    @UseGuards(RolesGuard)
+    @Mutation(() => Computer)
+    public async updateProductPc(
+        @Args("input") input: UpdateProductPc,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Computer> {
+        console.log("Mutation: updateProductPc");
+        input.memberId = memberId;
+        input._id = shapeIntoMongoObjectId(input._id)
+        return await this.productService.updateProductPc(input)
+    }
+
+    @Roles(MemberGroup.SELLER)
+    @UseGuards(RolesGuard)
+    @Mutation(returns => Peripheral)
+    public async updateProductPeripheral(
+        @Args("input") input: UpdateProductPeripheral,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Peripheral> {
+        console.log("Mutation: updateProductPeripheral");
+        input._id = shapeIntoMongoObjectId(input._id);
+        return await this.productService.updateProductPeripheral(input)
+    }
+
+    getAllProductPcs() { }
+    getAllProductPeripherals() { }
+
+    likeTargetPc() { }
+    likeTargetPeripheral() { }
+
+    //ADMIN
+    updateProductPcByAdmin() { }
+    updateProductPeripheralByAdmin() { }
+
+    getAllProductPcsByAdmin() { }
+    getAllProductPeripheralsByAdmin() { }
 }

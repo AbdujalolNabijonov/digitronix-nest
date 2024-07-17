@@ -2,7 +2,8 @@ import { registerEnumType } from "@nestjs/graphql";
 
 export enum ViewGroup {
     MEMBER = "MEMBER",
-    PRODUCT = "PRODUCT",
+    COMPUTER = "COMPUTER",
+    PERIPHERAL = "PERIPHERAL",
     ARTICLE = "ARTICLE"
 }
 

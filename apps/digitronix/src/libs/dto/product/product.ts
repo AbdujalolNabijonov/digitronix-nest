@@ -14,6 +14,7 @@ import {
     ProductType,
     RgbType
 } from "../../enums/product.enum";
+import { MeLiked } from "../like/like";
 
 @ObjectType()
 export class Computer {
@@ -98,6 +99,9 @@ export class Computer {
     @Field(() => Number)
     productRank: number
 
+    @Field(() => MeLiked, { nullable: true })
+    meLiked?: MeLiked
+
     @Field(() => Date)
     createdAt: Date
 
@@ -151,6 +155,9 @@ export class Peripheral {
 
     @Field(() => Number)
     productRank: number
+
+    @Field(() => MeLiked, { nullable: true })
+    meLiked?: MeLiked
 
     @Field(() => Date, { nullable: true })
     soldAt?: Date

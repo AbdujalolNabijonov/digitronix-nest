@@ -148,7 +148,7 @@ export class MemberService {
             likeGroup: LikeGroup.MEMBER
         }
         const modifier: number = await this.likeService.likeTargetToggle(inputLike)
-        const likedMember = await this.memberStatsEdit(likeTargetId, modifier)
+        const likedMember = await this.memberStatsEdit(likeTargetId, modifier, "memberLikes")
 
         if (!likedMember) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
         return likedMember
@@ -187,11 +187,11 @@ export class MemberService {
         return result
     }
 
-    public async memberStatsEdit(memberId: ObjectId, modifier: number): Promise<Member> {
+    public async memberStatsEdit(memberId: ObjectId, modifier: number, dataset: string): Promise<Member> {
         const member = await this.memberModel
             .findOneAndUpdate(
                 { _id: memberId },
-                { $inc: { memberLikes: modifier } },
+                { $inc: { [dataset]: modifier } },
                 { returnDocument: "after" })
             .exec()
         return member

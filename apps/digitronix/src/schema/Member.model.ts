@@ -31,6 +31,10 @@ const MemberSchema = new Schema({
         type: String,
         required: true
     },
+    memberDevices: {
+        type: Number,
+        default: 0
+    },
     memberPassword: {
         type: String,
         required: true

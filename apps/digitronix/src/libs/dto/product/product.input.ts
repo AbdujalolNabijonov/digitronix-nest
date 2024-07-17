@@ -116,11 +116,11 @@ export class ProductPerpheralInput {
 
     @IsNotEmpty()
     @Field(() => ProductSeries)
-    productSerie?: ProductSeries
+    productSerie: ProductSeries
 
     @IsNotEmpty()
     @Field(() => String)
-    productColor?: string
+    productColor: string
 
     @IsOptional()
     @Field(() => [String], { nullable: true })
@@ -136,5 +136,5 @@ export class ProductPerpheralInput {
 
     @IsNotEmpty()
     @Field(() => Number)
-    productPrice?: number
+    productPrice: number
 }

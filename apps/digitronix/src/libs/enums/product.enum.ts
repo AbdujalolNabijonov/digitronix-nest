@@ -11,18 +11,10 @@ export enum ProductType {
     LAPTOP = "LAPTOP",
     DESKTOP = "DESKTOP",
     GRAPHICS = "GRAPHICS",
-    PERIPHERALS = "PERIPHERALS"
+    PERIPHERAL = "PERIPHERAL"
 }
-registerEnumType(ProductType, { name: "ProductTyper" })
+registerEnumType(ProductType, { name: "ProductType" })
 
-export enum ProductColors {
-    BLACK = "BLACK",
-    WHITE = "WHITE",
-    SILVER = "SILVER",
-    SPACEBLACK = "SPACE BLACK",
-    RED = "RED",
-}
-registerEnumType(ProductColors, { name: "ProductColors" })
 
 export enum ProductCompany {
     MSI = "MSI",

@@ -1,7 +1,18 @@
 import { Schema } from "mongoose";
-import { Connectivity, CoreList, GraphicsSeries, GraphicsType, MaterialType, ProcessorGen, ProcessorType, ProductColors, ProductCompany, ProductSeries, ProductStatus, ProductType, RgbType } from "../libs/enums/product.enum";
+import {
+    CoreList,
+    GraphicsSeries,
+    GraphicsType,
+    ProcessorGen,
+    ProcessorType,
+    ProductCompany,
+    ProductSeries,
+    ProductStatus,
+    ProductType,
+    RgbType
+} from "../libs/enums/product.enum";
 
-const productSchema = new Schema({
+const computerSchema = new Schema({
     memberId: {
         type: Schema.Types.ObjectId,
         required: true
@@ -30,7 +41,7 @@ const productSchema = new Schema({
         enum: ProductSeries,
         required: true
     },
-    productPocessor: {
+    productProcessor: {
         type: String,
         enum: ProcessorType,
         required: true
@@ -52,11 +63,9 @@ const productSchema = new Schema({
     },
     productDisplay: {
         type: Number,
-        required: true
     },
     productColor: {
         type: String,
-        enum: ProductColors,
         required: true
     },
     productCore: {
@@ -78,14 +87,6 @@ const productSchema = new Schema({
     poductRgbType: {
         type: String,
         enum: RgbType
-    },
-    productConnectivity: {
-        type: String,
-        enum: Connectivity
-    },
-    productMaterial: {
-        type: String,
-        enum: MaterialType
     },
     productWebCam: {
         type: String,
@@ -125,6 +126,6 @@ const productSchema = new Schema({
     }
 }, { timestamps: true })
 
-productSchema.index({ productName: 1, productProcessor: 1, memberId: 1, productGraphicsType: 1, productMemory: 1 }, { unique: true })
+computerSchema.index({ productName: 1, productProcessor: 1, memberId: 1, productGraphicsType: 1, productMemory: 1 }, { unique: true })
 
-export default productSchema
+export default computerSchema

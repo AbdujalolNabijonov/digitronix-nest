@@ -1,6 +1,17 @@
 import { Field, InputType } from "@nestjs/graphql";
 import { IsNotEmpty, IsOptional, Length } from "class-validator";
-import { Connectivity, CoreList, GraphicsSeries, GraphicsType, ProcessorGen, ProcessorType, ProductColors, ProductCompany, ProductSeries, ProductType, RgbType } from "../../enums/product.enum";
+import {
+    Connectivity,
+    CoreList,
+    GraphicsSeries,
+    GraphicsType,
+    ProcessorGen,
+    ProcessorType,
+    ProductCompany,
+    ProductSeries,
+    ProductType,
+    RgbType
+} from "../../enums/product.enum";
 import { ObjectId } from "mongoose";
 
 @InputType()
@@ -31,7 +42,7 @@ export class ProductPCInput {
 
     @IsNotEmpty()
     @Field(() => ProcessorGen)
-    productPocessorGen:ProcessorGen;
+    productProcessorGen: ProcessorGen;
 
     @IsNotEmpty()
     @Field(() => GraphicsSeries)
@@ -46,8 +57,8 @@ export class ProductPCInput {
     productDisplay?: number
 
     @IsNotEmpty()
-    @Field(() => ProductColors)
-    productColor: ProductColors
+    @Field(() => String)
+    productColor: string
 
     @IsNotEmpty()
     @Field(() => CoreList)
@@ -91,7 +102,7 @@ export class ProductPCInput {
 }
 
 @InputType()
-export class ProductItemInput {
+export class ProductPerpheralInput {
     memberId?: ObjectId
 
     @IsNotEmpty()
@@ -101,15 +112,15 @@ export class ProductItemInput {
 
     @IsNotEmpty()
     @Field(() => ProductType)
-    poductType: ProductType
+    productType: ProductType
 
     @IsNotEmpty()
     @Field(() => ProductSeries)
     productSerie?: ProductSeries
 
     @IsNotEmpty()
-    @Field(() => ProductColors)
-    productColor?: ProductColors
+    @Field(() => String)
+    productColor?: string
 
     @IsOptional()
     @Field(() => [String], { nullable: true })
@@ -121,7 +132,7 @@ export class ProductItemInput {
 
     @IsNotEmpty()
     @Field(() => Connectivity)
-    productConnectivity?: Connectivity
+    productConnectivity: Connectivity
 
     @IsNotEmpty()
     @Field(() => Number)

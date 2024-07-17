@@ -6,7 +6,7 @@ export enum MemberType {
     SELLER = "SELLER",
     DELIVER = "DELIVER"
 }
-registerEnumType(MemberType, { name: "memberType" })
+registerEnumType(MemberType, { name: "MemberType" })
 
 export enum MemberAuthType {
     PHONE = "PHONE",
@@ -14,4 +14,4 @@ export enum MemberAuthType {
     EMAIL = "EMAIL"
 }
 
-registerEnumType(MemberAuthType, { name: "memberAuthType" })
+registerEnumType(MemberAuthType, { name: "MemberAuthType" })

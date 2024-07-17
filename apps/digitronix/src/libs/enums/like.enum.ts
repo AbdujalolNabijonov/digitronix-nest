@@ -7,4 +7,4 @@ export enum LikeGroup {
     COMMENT = "COMMENT"
 }
 
-registerEnumType(LikeGroup, { name: "likeGroup" })
+registerEnumType(LikeGroup, { name: "LikeGroup" })

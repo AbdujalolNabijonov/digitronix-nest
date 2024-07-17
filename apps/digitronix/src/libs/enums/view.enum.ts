@@ -6,4 +6,4 @@ export enum ViewGroup {
     ARTICLE = "ARTICLE"
 }
 
-registerEnumType(ViewGroup, { name: "viewGroup" })
+registerEnumType(ViewGroup, { name: "ViewGroup" })

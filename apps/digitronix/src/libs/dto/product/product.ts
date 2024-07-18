@@ -15,6 +15,7 @@ import {
     RgbType
 } from "../../enums/product.enum";
 import { MeLiked } from "../like/like";
+import { Member } from "../member/member";
 
 @ObjectType()
 export class Computer {
@@ -99,8 +100,11 @@ export class Computer {
     @Field(() => Number)
     productRank: number
 
-    @Field(() => MeLiked, { nullable: true })
-    meLiked?: MeLiked
+    @Field(() => [MeLiked], { nullable: true })
+    meLiked?: MeLiked[]
+
+    @Field(() => Member)
+    memberData: Member
 
     @Field(() => Date)
     createdAt: Date
@@ -167,4 +171,19 @@ export class Peripheral {
 
     @Field(() => Date)
     updatedAt: Date
+}
+
+@ObjectType()
+class Total {
+    @Field(() => Number, { nullable: true })
+    total?: number
+}
+
+@ObjectType()
+export class Computers {
+    @Field(() => [Computer])
+    list: Computer[]
+
+    @Field(() => [Total])
+    metaCounter: Total[]
 }

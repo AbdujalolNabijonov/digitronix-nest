@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { ProductPCInput, ProductPerpheralInput } from '../../libs/dto/product/product.input';
-import { Computer, Peripheral } from '../../libs/dto/product/product';
+import { ProductComputerInquiry, ProductPCInput, ProductPerpheralInput } from '../../libs/dto/product/product.input';
+import { Computer, Computers, Peripheral } from '../../libs/dto/product/product';
 import { MemberService } from '../member/member.service';
 import { Message } from '../../libs/common';
 import { LikeService } from '../like/like.service';
@@ -11,8 +11,11 @@ import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { ViewInput } from '../../libs/dto/view/view.input';
 import { ViewGroup } from '../../libs/enums/view.enum';
-import { ProductType } from '../../libs/enums/product.enum';
+import { ProductStatus, ProductType } from '../../libs/enums/product.enum';
 import { UpdateProductPc, UpdateProductPeripheral } from '../../libs/dto/product/product.update';
+import { T } from '../../libs/types/general';
+import { Direction } from '../../libs/enums/common.enum';
+import { lookupAuthMemberLiked, lookUpMember } from '../../libs/types/config';
 
 @Injectable()
 export class ProductService {
@@ -62,7 +65,7 @@ export class ProductService {
             }
             const existanceLike = await this.likeService.checkExistence(likeInput)
             if (existanceLike) {
-                result.meLiked = {
+                result[0].meLiked = {
                     memberId,
                     likeTargetId: targetId,
                     myFavorite: true
@@ -138,6 +141,51 @@ export class ProductService {
             .exec()
         if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
         return result
+    }
+
+    public async getAllProductPcs(input: ProductComputerInquiry, memberId: ObjectId): Promise<Computers> {
+        const { page, limit, sort, diection } = input;
+        const {
+            text,
+            productSerie,
+            productColor,
+            productCompany,
+            productDispaly,
+            productGraphicsType,
+            productProcessorGen,
+            priceRange,
+        } = input.search
+
+        const match: T = { productStatus: ProductStatus.ACTIVE }
+        if (text) match.productName = { $regex: new RegExp(text, "i") };
+        if (productSerie && productSerie.length) match.productSerie = { $in: productSerie };
+        if (productColor && productColor.length) match.productColor = { $in: productColor };
+        if (productCompany && productCompany.length) match.productCompany = { $in: productCompany };
+        if (productDispaly && productDispaly.length) match.prodcutLength = { $in: productDispaly };
+        if (productGraphicsType && productGraphicsType.length) match.productGraphicsType = { $in: productGraphicsType };
+        if (productProcessorGen && productProcessorGen.length) match.productProcessorGen = { $in: productProcessorGen };
+        if (priceRange) match.productPrice = { $gte: priceRange.start, $lte: priceRange.end }
+
+        const sorting: T = { [sort ?? "createdAt"]: diection ?? Direction.DESC }
+        const result = await this.computerModel.aggregate([
+            { $match: match },
+            { $sort: sorting },
+            {
+                $facet: {
+                    list: [
+                        { $skip: (page - 1) * limit },
+                        { $limit: limit },
+                        lookupAuthMemberLiked(memberId),
+                        lookUpMember,
+                        {$unwind:"$memberData"}
+                    ],
+                    metaCounter: [{ $count: "total" }]
+                }
+            }
+        ]).exec()
+
+        if (!result[0]) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        return result[0]
     }
 
 

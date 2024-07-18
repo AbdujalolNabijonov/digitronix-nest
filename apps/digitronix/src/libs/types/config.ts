@@ -1,4 +1,4 @@
-import {ObjectId} from "bson"
+import { ObjectId } from "bson"
 import * as path from "path"
 import { v4 as uuidv4 } from "uuid"
 import { T } from "./general"
@@ -10,11 +10,21 @@ export const avaibleMemberSorts = [
     "memberLikes",
     "memberViews",
 ]
+
+export const avaibleProductSorts = [
+    "createdAt",
+    "updatedAt",
+    "productRank",
+    "productViews",
+    "productLikes"
+]
 export const avaibleMimeType = [
     "image/jpg",
     "image/jpeg",
     "image/png"
 ]
+
+
 //reuseable 
 export function shapeIntoMongoObjectId(target: any) {
     return typeof target === "string" ? new ObjectId(target) : target
@@ -49,7 +59,7 @@ export const lookupAuthMemberLiked = (memberId: T, likeTargetId: string = "$_id"
                         _id: 0,
                         likeTargetId: 1,
                         memberId: 1,
-                        myFavorite:"$$localMyFavourite"
+                        myFavorite: "$$localMyFavourite"
                     }
                 }
             ],
@@ -57,3 +67,13 @@ export const lookupAuthMemberLiked = (memberId: T, likeTargetId: string = "$_id"
         }
     }
 }
+
+export const lookUpMember = {
+    $lookup: {
+        from: "members",
+        localField: "memberId",
+        foreignField: "_id",
+        as: "memberData"
+    }
+}
+

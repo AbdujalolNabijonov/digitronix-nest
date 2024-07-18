@@ -1,5 +1,5 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { IsNotEmpty, IsOptional, Length } from "class-validator";
+import { IsIn, IsNotEmpty, IsOptional, Length } from "class-validator";
 import {
     Connectivity,
     CoreList,
@@ -13,6 +13,8 @@ import {
     RgbType
 } from "../../enums/product.enum";
 import { ObjectId } from "mongoose";
+import { avaibleProductSorts, } from "../../types/config";
+import { Direction } from "../../enums/common.enum";
 
 @InputType()
 export class ProductPCInput {
@@ -137,4 +139,76 @@ export class ProductPerpheralInput {
     @IsNotEmpty()
     @Field(() => Number)
     productPrice: number
+}
+
+@InputType()
+class PriceRange {
+    @IsOptional()
+    @Field(() => Number, { nullable: true })
+    start?: number
+
+    @IsOptional()
+    @Field(() => Number, { nullable: true })
+    end?: number
+}
+
+
+@InputType()
+class PISearch {
+    @IsOptional()
+    @Field(() => String, { nullable: true })
+    text?: string
+
+    @IsOptional()
+    @Field(() => [ProductSeries], { nullable: true })
+    productSerie?: ProductSeries[]
+
+    @IsOptional()
+    @Field(() => [ProcessorGen], { nullable: true })
+    productProcessorGen?: ProcessorGen[]
+
+    @IsOptional()
+    @Field(() => [GraphicsType], { nullable: true })
+    productGraphicsType?: GraphicsType[]
+
+    @IsOptional()
+    @Field(() => [Number], { nullable: true })
+    productDispaly?: number[]
+
+    @IsOptional()
+    @Field(() => [ProductCompany], { nullable: true })
+    productCompany?: ProductCompany[]
+
+    @IsOptional()
+    @Field(() => [String], { nullable: true })
+    productColor?: string[]
+
+    @IsOptional()
+    @Field(() => PriceRange, { nullable: true })
+    priceRange?: PriceRange
+}
+
+
+@InputType()
+export class ProductComputerInquiry {
+    @IsNotEmpty()
+    @Field(() => Number)
+    page: number
+
+    @IsNotEmpty()
+    @Field(() => Number)
+    limit: number
+
+    @IsOptional()
+    @IsIn(avaibleProductSorts)
+    @Field(() => String, { nullable: true })
+    sort?: string
+
+    @IsOptional()
+    @Field(() => Direction, { nullable: true })
+    diection?: Direction
+
+    @IsNotEmpty()
+    @Field(() => PISearch)
+    search: PISearch
 }

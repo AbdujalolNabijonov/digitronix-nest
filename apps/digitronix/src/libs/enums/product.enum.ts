@@ -71,6 +71,7 @@ export enum ProductSeries {
     RAIDER = "RAIDER",
     VECTOR = "VECTOR",
     AEGIS = "AEGIS",
+    MACBOOK = "MACBOOK",
     INFINITE = "INFINITE",
     TRIDENT = "TIDENT",
     CODEX = "CODEX",

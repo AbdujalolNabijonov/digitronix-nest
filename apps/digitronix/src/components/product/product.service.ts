@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { ProductComputerInquiry, ProductPCInput, ProductPerpheralInput } from '../../libs/dto/product/product.input';
-import { Computer, Computers, Peripheral } from '../../libs/dto/product/product';
+import { ProductComputerInquiry, ProductPCInput, ProductPeripheralInquiry, ProductPerpheralInput } from '../../libs/dto/product/product.input';
+import { Computer, Computers, Peripheral, Peripherals } from '../../libs/dto/product/product';
 import { MemberService } from '../member/member.service';
 import { Message } from '../../libs/common';
 import { LikeService } from '../like/like.service';
@@ -100,7 +100,7 @@ export class ProductService {
 
             const existanceLike = await this.likeService.checkExistence(likeInput)
             if (existanceLike) {
-                result.meLiked = {
+                result[0].meLiked = {
                     memberId,
                     likeTargetId: targetId,
                     myFavorite: true
@@ -177,13 +177,55 @@ export class ProductService {
                         { $limit: limit },
                         lookupAuthMemberLiked(memberId),
                         lookUpMember,
-                        {$unwind:"$memberData"}
+                        { $unwind: "$memberData" }
                     ],
                     metaCounter: [{ $count: "total" }]
                 }
             }
         ]).exec()
 
+        if (!result[0]) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        return result[0]
+    }
+
+    public async getAllProductPeripherals(input: ProductPeripheralInquiry, memberId: ObjectId): Promise<Peripherals> {
+        const { page, limit, direction, sort } = input
+
+        const {
+            text,
+            connectivity,
+            productCompany,
+            productColor,
+            productMaterial,
+            priceRange
+        } = input.search
+        const match: T = { productStatus: ProductStatus.ACTIVE };
+
+        if (text) match.productName = { $regex: new RegExp(text, "i") }
+        if (connectivity && connectivity.length) match.productConnectivity = { $in: connectivity };
+        if (productCompany && productCompany.length) match.productCompany = { $in: productCompany };
+        if (productColor && productColor.length) match.productColor = { $in: productColor };
+        if (productMaterial && productMaterial.length) match.productMaterial = { $in: productMaterial }
+        if (priceRange) match.productPrice = { $gte: priceRange.start, $lte: priceRange.end }
+
+        const sorting: T = { [sort ?? "createdAt"]: direction ?? Direction.DESC }
+
+        const result = await this.peripheralModel.aggregate([
+            { $match: match },
+            { $sort: sorting },
+            {
+                $facet: {
+                    list: [
+                        { $skip: (page - 1) * limit },
+                        { $limit: limit },
+                        lookupAuthMemberLiked(memberId),
+                        lookUpMember,
+                        { $unwind: "$memberData" }
+                    ],
+                    metaCounter: [{ $count: "total" }]
+                }
+            }
+        ]).exec()
         if (!result[0]) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
         return result[0]
     }

@@ -160,8 +160,11 @@ export class Peripheral {
     @Field(() => Number)
     productRank: number
 
-    @Field(() => MeLiked, { nullable: true })
-    meLiked?: MeLiked
+    @Field(() => [MeLiked], { nullable: true })
+    meLiked?: MeLiked[]
+
+    @Field(() => Member, { nullable: true })
+    memberData?: Member
 
     @Field(() => Date, { nullable: true })
     soldAt?: Date
@@ -186,4 +189,13 @@ export class Computers {
 
     @Field(() => [Total])
     metaCounter: Total[]
+}
+
+@ObjectType()
+export class Peripherals {
+    @Field(() => [Peripheral])
+    list: Peripheral[]
+
+    @Field(() => [Total])
+    metaCounter: Total
 }

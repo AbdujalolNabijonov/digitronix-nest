@@ -5,6 +5,7 @@ import {
     CoreList,
     GraphicsSeries,
     GraphicsType,
+    MaterialType,
     ProcessorGen,
     ProcessorType,
     ProductCompany,
@@ -211,4 +212,55 @@ export class ProductComputerInquiry {
     @IsNotEmpty()
     @Field(() => PISearch)
     search: PISearch
+}
+
+@InputType()
+class PPISearch {
+    @IsOptional()
+    @Field(() => String, { nullable: true })
+    text?: string
+
+    @IsOptional()
+    @Field(() => [Connectivity], { nullable: true })
+    connectivity?: Connectivity[]
+
+    @IsOptional()
+    @Field(() => [ProductCompany], { nullable: true })
+    productCompany?: ProductCompany[]
+
+    @IsOptional()
+    @Field(() => [String], { nullable: true })
+    productColor?: string[]
+
+    @IsOptional()
+    @Field(() => [MaterialType], { nullable: true })
+    productMaterial?: MaterialType[]
+
+    @IsOptional()
+    @Field(() => PriceRange, { nullable: true })
+    priceRange?: PriceRange
+}
+
+@InputType()
+export class ProductPeripheralInquiry {
+    @IsNotEmpty()
+    @Field(() => Number)
+    page: number
+
+    @IsNotEmpty()
+    @Field(() => Number)
+    limit: number
+
+    @IsOptional()
+    @IsIn(avaibleProductSorts)
+    @Field(() => String, { nullable: true })
+    sort?: string
+
+    @IsOptional()
+    @Field(() => Direction, { nullable: true })
+    direction?: Direction
+
+    @IsNotEmpty()
+    @Field(() => PPISearch)
+    search: PPISearch
 }

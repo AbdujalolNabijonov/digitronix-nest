@@ -1,11 +1,11 @@
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { ProductService } from './product.service';
-import { Computer, Computers, Peripheral } from '../../libs/dto/product/product';
+import { Computer, Computers, Peripheral, Peripherals } from '../../libs/dto/product/product';
 import { Roles } from '../auth/decorators/auth.roles';
 import { MemberGroup } from '../../libs/types/member';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UseGuards } from '@nestjs/common';
-import { ProductComputerInquiry, ProductPCInput, ProductPerpheralInput } from '../../libs/dto/product/product.input';
+import { ProductComputerInquiry, ProductPCInput, ProductPeripheralInquiry, ProductPerpheralInput } from '../../libs/dto/product/product.input';
 import { AuthMember } from '../auth/decorators/auth.member';
 import { ObjectId } from 'mongoose';
 import { WithoutGuards } from '../auth/guards/without.guard';
@@ -98,7 +98,16 @@ export class ProductResolver {
         console.log("Query:getAllProductPcs");
         return await this.productService.getAllProductPcs(input, memberId)
     }
-    getAllProductPeripherals() { }
+
+    @UseGuards(WithoutGuards)
+    @Query(() => Peripherals)
+    public async getAllProductPeripherals(
+        @Args("input") input: ProductPeripheralInquiry,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Peripherals> {
+        console.log("Query:getAllProductPeripherals");
+        return await this.productService.getAllProductPeripherals(input, memberId)
+    }
 
     likeTargetPc() { }
     likeTargetPeripheral() { }

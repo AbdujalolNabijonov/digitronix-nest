@@ -133,7 +133,16 @@ export class ProductResolver {
     }
 
     //ADMIN
-    updateProductPcByAdmin() { }
+    @Roles(MemberGroup.ADMIN)
+    @UseGuards(RolesGuard)
+    @Mutation(()=>Computer)
+    public async updateProductPcByAdmin(
+        @Args("input") input:UpdateProductPc,
+        @AuthMember("_id") memberId:ObjectId
+    ):Promise<Computer> { 
+        console.log("Mutation: updateProductPcByAdmin");
+        return await this.productService.updateProductPcByAdmin(input, memberId)
+    }
     updateProductPeripheralByAdmin() { }
 
     getAllProductPcsByAdmin() { }

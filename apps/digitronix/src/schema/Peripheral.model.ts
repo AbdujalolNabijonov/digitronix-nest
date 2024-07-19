@@ -71,6 +71,9 @@ const peripheralSchema = new Schema({
     },
     soldAt: {
         type: Date
+    },
+    deletedAt: {
+        type: Date
     }
 }, { timestamps: true })
 

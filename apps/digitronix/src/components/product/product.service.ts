@@ -16,6 +16,7 @@ import { UpdateProductPc, UpdateProductPeripheral } from '../../libs/dto/product
 import { T } from '../../libs/types/general';
 import { Direction } from '../../libs/enums/common.enum';
 import { lookupAuthMemberLiked, lookUpMember } from '../../libs/types/config';
+import * as moment from "moment"
 
 @Injectable()
 export class ProductService {
@@ -258,6 +259,33 @@ export class ProductService {
         const modifier = await this.likeService.likeTargetToggle(likeInput);
         const result = await this.productStatsEdit(likeTargetId, modifier, "productLikes", ProductType.PERIPHERAL);
         if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+        return result
+    }
+
+    //ADMIN
+    public async updateProductPcByAdmin(input: UpdateProductPc, memberId: ObjectId): Promise<Computer> {
+        let { productStatus, soldAt, deletedAt } = input
+        const search = {
+            _id: input._id,
+            productStatus: ProductStatus.ACTIVE
+        }
+        const existance = await this.computerModel.findById(input._id).lean().exec();
+        if (!existance) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        if (productStatus === ProductStatus.SOLD) soldAt = moment().toDate();
+        else if (productStatus === ProductStatus.DELETED) deletedAt = moment().toDate();
+
+        delete input._id
+        const result = await this.computerModel.findOneAndUpdate(search, input, { returnDocument: "after" }).exec();
+        if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+
+        if (soldAt || deletedAt) {
+            await this.memberService.memberStatsEdit(
+                input.memberId,
+                -1,
+                "memberProducts"
+            )
+        }
         return result
     }
 

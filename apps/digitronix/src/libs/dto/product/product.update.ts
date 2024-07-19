@@ -1,6 +1,6 @@
 import { Field, InputType } from "@nestjs/graphql";
 import { IsNotEmpty, IsOptional, Length } from "class-validator";
-import { Connectivity, CoreList, GraphicsSeries, GraphicsType, ProcessorGen, ProcessorType, ProductCompany, ProductSeries, ProductType, RgbType } from "../../enums/product.enum";
+import { Connectivity, CoreList, GraphicsSeries, GraphicsType, ProcessorGen, ProcessorType, ProductCompany, ProductSeries, ProductStatus, ProductType, RgbType } from "../../enums/product.enum";
 import { ObjectId } from "mongoose";
 
 @InputType()
@@ -15,6 +15,10 @@ export class UpdateProductPc {
     @Length(5, 25)
     @Field(() => String, { nullable: true })
     productName?: string
+
+    @IsOptional()
+    @Field(() => ProductStatus, { nullable: true })
+    productStatus?: ProductStatus
 
     @IsOptional()
     @Field(() => ProductCompany, { nullable: true })
@@ -91,6 +95,9 @@ export class UpdateProductPc {
     @IsOptional()
     @Field(() => Number, { nullable: true })
     productPrice: number
+
+    soldAt?: Date
+    deletedAt?: Date
 
 }
 

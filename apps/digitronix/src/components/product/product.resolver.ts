@@ -120,7 +120,17 @@ export class ProductResolver {
         const targetLikeId = shapeIntoMongoObjectId(input)
         return await this.productService.likeTargetPc(targetLikeId, memberId)
     }
-    likeTargetPeripheral() { }
+
+    @UseGuards(AuthGuard)
+    @Mutation(() => Peripheral)
+    public async likeTargetPeripheral(
+        @Args("input") input: String,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Peripheral> {
+        console.log("Mutation: likeTargetPeripheral")
+        const targetLikeId = shapeIntoMongoObjectId(input);
+        return await this.productService.likeTargetPeripheral(targetLikeId, memberId)
+    }
 
     //ADMIN
     updateProductPcByAdmin() { }

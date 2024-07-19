@@ -246,6 +246,20 @@ export class ProductService {
         return result
     }
 
+    public async likeTargetPeripheral(likeTargetId: ObjectId, memberId: ObjectId): Promise<Peripheral> {
+        const existance = await this.peripheralModel.findById(likeTargetId).lean().exec();
+        if (!existance) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        const likeInput: LikeInput = {
+            memberId,
+            likeTargetId,
+            likeGroup: LikeGroup.PERIPHERAL
+        }
+        const modifier = await this.likeService.likeTargetToggle(likeInput);
+        const result = await this.productStatsEdit(likeTargetId, modifier, "productLikes", ProductType.PERIPHERAL);
+        if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+        return result
+    }
 
 
     public async productStatsEdit(_id: ObjectId, modifier: number, dataset: string, productType: ProductType): Promise<any> {

@@ -34,7 +34,7 @@ const computerSchema = new Schema({
     productType: {
         type: String,
         enum: ProductType,
-        default: ProductType.LAPTOP
+        default: ProductType.COMPUTER
     },
     productSerie: {
         type: String,

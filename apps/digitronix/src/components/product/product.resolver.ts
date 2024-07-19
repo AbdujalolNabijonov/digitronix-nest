@@ -11,6 +11,7 @@ import { ObjectId } from 'mongoose';
 import { WithoutGuards } from '../auth/guards/without.guard';
 import { shapeIntoMongoObjectId } from '../../libs/types/config';
 import { UpdateProductPc, UpdateProductPeripheral } from '../../libs/dto/product/product.update';
+import { AuthGuard } from '../auth/guards/auth.guard';
 
 @Resolver()
 export class ProductResolver {
@@ -109,7 +110,16 @@ export class ProductResolver {
         return await this.productService.getAllProductPeripherals(input, memberId)
     }
 
-    likeTargetPc() { }
+    @UseGuards(AuthGuard)
+    @Mutation(() => Computer)
+    public async likeTargetPc(
+        @Args("input") input: string,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Computer> {
+        console.log("Mutation: likeTargetPc");
+        const targetLikeId = shapeIntoMongoObjectId(input)
+        return await this.productService.likeTargetPc(targetLikeId, memberId)
+    }
     likeTargetPeripheral() { }
 
     //ADMIN

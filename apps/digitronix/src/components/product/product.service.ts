@@ -79,7 +79,7 @@ export class ProductService {
             }
             const existanceView = await this.viewService.recordView(viewInput);
             if (existanceView) {
-                await this.productStatsEdit(targetId, 1, "productViews", ProductType.LAPTOP)
+                await this.productStatsEdit(targetId, 1, "productViews", ProductType.COMPUTER)
                 result.productViews++
             }
         }
@@ -230,17 +230,33 @@ export class ProductService {
         return result[0]
     }
 
+    public async likeTargetPc(targetLikeId: ObjectId, memberId: ObjectId): Promise<Computer> {
+        const exist = await this.computerModel.findById(targetLikeId).exec()
+        if (!exist) throw new InternalServerErrorException(Message.NO_DATA_FOUND)
+
+        const likeInput: LikeInput = {
+            memberId,
+            likeTargetId: targetLikeId,
+            likeGroup: LikeGroup.COMPUTER
+        }
+        const modifier = await this.likeService.likeTargetToggle(likeInput);
+
+        const result = await this.productStatsEdit(targetLikeId, modifier, "productLikes", ProductType.COMPUTER)
+        if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG)
+        return result
+    }
 
 
-    public async productStatsEdit(_id: ObjectId, modifier: number, dataset: string, productType: ProductType): Promise<void> {
+
+    public async productStatsEdit(_id: ObjectId, modifier: number, dataset: string, productType: ProductType): Promise<any> {
         if (productType === ProductType.PERIPHERAL) {
-            await this.peripheralModel.findOneAndUpdate(
+            return await this.peripheralModel.findOneAndUpdate(
                 { _id },
                 { $inc: { [dataset]: modifier } },
                 { returnDocument: "after" }
             ).exec()
         } else {
-            await this.computerModel.findOneAndUpdate(
+            return await this.computerModel.findOneAndUpdate(
                 { _id },
                 { $inc: { [dataset]: modifier } },
                 { returnDocument: "after" }

@@ -20,6 +20,9 @@ import { Member } from "../member/member";
 @ObjectType()
 export class Computer {
     @Field(() => String)
+    _id: ObjectId;
+
+    @Field(() => String)
     memberId: ObjectId
 
     @Field(() => String)
@@ -115,6 +118,9 @@ export class Computer {
 
 @ObjectType()
 export class Peripheral {
+    @Field(() => String)
+    _id: ObjectId;
+
     @Field(() => String)
     memberId: ObjectId
 

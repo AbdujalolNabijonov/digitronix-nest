@@ -10,6 +10,7 @@ import {
     ProcessorType,
     ProductCompany,
     ProductSeries,
+    ProductStatus,
     ProductType,
     RgbType
 } from "../../enums/product.enum";
@@ -30,6 +31,10 @@ export class ProductPCInput {
     @IsNotEmpty()
     @Field(() => ProductCompany)
     productCompany: ProductCompany
+
+    @IsOptional()
+    @Field(() => ProductStatus, { nullable: true })
+    productStatus?: ProductStatus
 
     @IsNotEmpty()
     @Field(() => ProductType)

@@ -115,6 +115,10 @@ export class UpdateProductPeripheral {
     productName?: string;
 
     @IsOptional()
+    @Field(() => ProductStatus, { nullable: true })
+    productStatus?: ProductStatus
+
+    @IsOptional()
     @Field(() => ProductType, { nullable: true })
     productType?: ProductType
 
@@ -141,4 +145,10 @@ export class UpdateProductPeripheral {
     @IsOptional()
     @Field(() => Number, { nullable: true })
     productPrice?: number
+
+    @Field(() => Date, { nullable: true })
+    soldAt?: Date
+
+    @Field(() => Date, { nullable: true })
+    deletedAt?: Date
 }

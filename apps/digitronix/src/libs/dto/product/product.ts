@@ -31,6 +31,9 @@ export class Computer {
     @Field(() => ProductCompany)
     productCompany: ProductCompany
 
+    @Field(() => ProductStatus)
+    productStatus: ProductStatus
+
     @Field(() => ProductType)
     productType: ProductType
 
@@ -109,6 +112,12 @@ export class Computer {
     @Field(() => Member)
     memberData: Member
 
+    @Field(() => Date, { nullable: true })
+    soldAt?: Date
+
+    @Field(() => Date, { nullable: true })
+    deletedAt?: Date
+
     @Field(() => Date)
     createdAt: Date
 
@@ -174,6 +183,9 @@ export class Peripheral {
 
     @Field(() => Date, { nullable: true })
     soldAt?: Date
+
+    @Field(() => Date, { nullable: true })
+    deletedAt?: Date
 
     @Field(() => Date)
     createdAt: Date

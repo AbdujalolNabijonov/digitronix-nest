@@ -8,7 +8,7 @@ export enum ProductStatus {
 registerEnumType(ProductStatus, { name: "ProductStatus" })
 
 export enum ProductType {
-    COMPUTER = "COMPUTER",
+    LAPTOP = "LAPTOP",
     DESKTOP = "DESKTOP",
     GRAPHICS = "GRAPHICS",
     PERIPHERAL = "PERIPHERAL"

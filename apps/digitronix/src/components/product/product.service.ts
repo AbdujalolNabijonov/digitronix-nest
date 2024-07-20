@@ -32,7 +32,7 @@ export class ProductService {
         try {
             const newComputer = await this.computerModel.create(input)
             if (newComputer) {
-                await this.memberService.memberStatsEdit(input.memberId, 1, "memberDevices")
+                await this.memberService.memberStatsEdit(input.memberId, 1, "memberProducts")
             }
             return newComputer
         } catch (err: any) {
@@ -45,7 +45,7 @@ export class ProductService {
         try {
             const newPeripheral = await this.peripheralModel.create(input)
             if (newPeripheral) {
-                await this.memberService.memberStatsEdit(input.memberId, 1, "memberDevices")
+                await this.memberService.memberStatsEdit(input.memberId, 1, "memberProducts")
             }
             return newPeripheral
         } catch (err: any) {
@@ -80,7 +80,7 @@ export class ProductService {
             }
             const existanceView = await this.viewService.recordView(viewInput);
             if (existanceView) {
-                await this.productStatsEdit(targetId, 1, "productViews", ProductType.COMPUTER)
+                await this.productStatsEdit(targetId, 1, "productViews", ProductType.DESKTOP)
                 result.productViews++
             }
         }
@@ -123,6 +123,14 @@ export class ProductService {
     }
 
     public async updateProductPc(input: UpdateProductPc): Promise<Computer> {
+        let { productStatus, soldAt, deletedAt } = input
+
+        const existance = await this.computerModel.findOne({ _id: input._id, productStatus: ProductStatus.ACTIVE }).exec();
+        if (!existance) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        if (productStatus === ProductStatus.SOLD) soldAt = moment().toDate();
+        else if (productStatus === ProductStatus.DELETED) deletedAt = moment().toDate()
+
         const result = await this.computerModel
             .findByIdAndUpdate(
                 input._id,
@@ -130,6 +138,9 @@ export class ProductService {
                 { returnDocument: "after" })
             .exec()
         if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+        if (soldAt || deletedAt) {
+            await this.memberService.memberStatsEdit(input.memberId, -1, "memberProducts")
+        }
         return result
     }
 
@@ -242,7 +253,7 @@ export class ProductService {
         }
         const modifier = await this.likeService.likeTargetToggle(likeInput);
 
-        const result = await this.productStatsEdit(targetLikeId, modifier, "productLikes", ProductType.COMPUTER)
+        const result = await this.productStatsEdit(targetLikeId, modifier, "productLikes", ProductType.DESKTOP)
         if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG)
         return result
     }
@@ -286,6 +297,28 @@ export class ProductService {
                 "memberProducts"
             )
         }
+        return result
+    }
+
+    public async updateProductPeripheralByAdmin(input: UpdateProductPeripheral): Promise<Peripheral> {
+        let { productStatus, soldAt, deletedAt } = input
+
+        const search: T = {
+            _id: input._id,
+            productStatus: ProductStatus.ACTIVE
+        }
+        const existance = await this.peripheralModel.findOne(search).exec();
+        if (!existance) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        if (productStatus === ProductStatus.SOLD) soldAt = moment().toDate();
+        else if (productStatus === ProductStatus.DELETED) deletedAt = moment().toDate();
+
+        const result = await this.peripheralModel.findOneAndUpdate(search, input, { new: true }).exec();
+
+        if (soldAt || deletedAt) {
+            await this.memberService.memberStatsEdit(input.memberId, -1, "memberProducts")
+        }
+        if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED)
         return result
     }
 

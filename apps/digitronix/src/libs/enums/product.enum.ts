@@ -10,16 +10,19 @@ registerEnumType(ProductStatus, { name: "ProductStatus" })
 export enum ProductType {
     LAPTOP = "LAPTOP",
     DESKTOP = "DESKTOP",
+    PERIPHERAL = "PERIPHERAL"
+}
+registerEnumType(ProductType, { name: "ProductType" })
+
+export enum PeripheralCategory {
     GRAPHICS = "GRAPHICS",
-    PERIPHERAL = "PERIPHERAL",
     KEYBOARD = "KEYBOARD",
     MICE = "MICE",
     AUDIO = "AUDIO",
     CONTROLLER = "CONTROLLER",
     GAMINGCHAIR = "GAMINGCHAIR"
 }
-registerEnumType(ProductType, { name: "ProductType" })
-
+registerEnumType(PeripheralCategory, { name: "PeripheralCategory" })
 
 export enum ProductCompany {
     MSI = "MSI",

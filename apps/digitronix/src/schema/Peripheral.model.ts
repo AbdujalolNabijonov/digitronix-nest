@@ -2,6 +2,7 @@ import { Schema } from "mongoose";
 import {
     Connectivity,
     MaterialType,
+    PeripheralCategory,
     ProductStatus,
     ProductType,
     RgbType
@@ -16,6 +17,11 @@ const peripheralSchema = new Schema({
         type: String,
         enum: ProductStatus,
         default: ProductStatus.ACTIVE
+    },
+    productCategory: {
+        type: String,
+        enum: PeripheralCategory,
+        required: true
     },
     productType: {
         type: String,

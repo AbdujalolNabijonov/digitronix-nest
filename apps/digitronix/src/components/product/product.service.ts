@@ -387,7 +387,7 @@ export class ProductService {
     }
 
     public async productStatsEdit(_id: ObjectId, modifier: number, dataset: string, productType: ProductType): Promise<any> {
-        if (productType === ProductType.PERIPHERAL) {
+        if (productType === ProductType.DESKTOP || productType === ProductType.LAPTOP) {
             return await this.peripheralModel.findOneAndUpdate(
                 { _id },
                 { $inc: { [dataset]: modifier } },

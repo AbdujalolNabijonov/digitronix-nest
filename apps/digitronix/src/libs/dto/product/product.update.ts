@@ -1,6 +1,6 @@
 import { Field, InputType } from "@nestjs/graphql";
 import { IsIn, IsNotEmpty, IsOptional, Length } from "class-validator";
-import { Connectivity, CoreList, GraphicsSeries, GraphicsType, ProcessorGen, ProcessorType, ProductCompany, ProductSeries, ProductStatus, ProductType, RgbType } from "../../enums/product.enum";
+import { Connectivity, CoreList, GraphicsSeries, GraphicsType, PeripheralCategory, ProcessorGen, ProcessorType, ProductCompany, ProductSeries, ProductStatus, ProductType, RgbType } from "../../enums/product.enum";
 import { ObjectId } from "mongoose";
 import { Direction } from "../../enums/common.enum";
 import { avaibleProductSorts } from "../../types/config";
@@ -119,6 +119,10 @@ export class UpdateProductPeripheral {
     @IsOptional()
     @Field(() => ProductStatus, { nullable: true })
     productStatus?: ProductStatus
+
+    @IsOptional()
+    @Field(() => PeripheralCategory, { nullable: true })
+    productCategory: PeripheralCategory
 
     @IsOptional()
     @Field(() => ProductType, { nullable: true })

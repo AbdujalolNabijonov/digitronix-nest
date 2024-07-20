@@ -6,6 +6,7 @@ import {
     GraphicsSeries,
     GraphicsType,
     MaterialType,
+    PeripheralCategory,
     ProcessorGen,
     ProcessorType,
     ProductCompany,
@@ -117,6 +118,10 @@ export class ProductPerpheralInput {
     @Length(5, 25)
     @Field(() => String)
     productName: string;
+
+    @IsNotEmpty()
+    @Field(() => PeripheralCategory)
+    productCategory: PeripheralCategory
 
     @IsNotEmpty()
     @Field(() => ProductType)
@@ -242,8 +247,8 @@ class PPISearch {
     productType: ProductType[]
 
     @IsOptional()
-    @Field(() => ProductSeries, { nullable: true })
-    productSerie: ProductSeries
+    @Field(() => PeripheralCategory)
+    productCategory: PeripheralCategory
 
     @IsOptional()
     @Field(() => [Connectivity], { nullable: true })

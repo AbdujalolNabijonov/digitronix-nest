@@ -1,7 +1,9 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { IsNotEmpty, IsOptional, Length } from "class-validator";
+import { IsIn, IsNotEmpty, IsOptional, Length } from "class-validator";
 import { Connectivity, CoreList, GraphicsSeries, GraphicsType, ProcessorGen, ProcessorType, ProductCompany, ProductSeries, ProductStatus, ProductType, RgbType } from "../../enums/product.enum";
 import { ObjectId } from "mongoose";
+import { Direction } from "../../enums/common.enum";
+import { avaibleProductSorts } from "../../types/config";
 
 @InputType()
 export class UpdateProductPc {

@@ -146,14 +146,22 @@ export class ProductResolver {
 
     @Roles(MemberGroup.ADMIN)
     @UseGuards(RolesGuard)
-    @Mutation(()=>Peripheral)
+    @Mutation(() => Peripheral)
     public async updateProductPeripheralByAdmin(
-        @Args("input") input:UpdateProductPeripheral
-    ):Promise<Peripheral> {
+        @Args("input") input: UpdateProductPeripheral
+    ): Promise<Peripheral> {
         console.log("Mutation: updateProductPeripheralByAdmin")
         return await this.productService.updateProductPeripheralByAdmin(input)
-     }
+    }
 
-    getAllProductPcsByAdmin() { }
+    @Roles(MemberGroup.ADMIN)
+    @UseGuards(RolesGuard)
+    @Query(() => Computers)
+    public async getAllProductPcsByAdmin(
+        @Args("input") input: ProductComputerInquiry
+    ): Promise<Computers> {
+        console.log("Query: getAllProductPcsByAdmin");
+        return await this.productService.getAllProductPcsByAdmin(input)
+    }
     getAllProductPeripheralsByAdmin() { }
 }

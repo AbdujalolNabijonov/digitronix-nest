@@ -156,7 +156,7 @@ export class ProductService {
     }
 
     public async getAllProductPcs(input: ProductComputerInquiry, memberId: ObjectId): Promise<Computers> {
-        const { page, limit, sort, diection } = input;
+        const { page, limit, sort, direction } = input;
         const {
             text,
             productSerie,
@@ -178,7 +178,7 @@ export class ProductService {
         if (productProcessorGen && productProcessorGen.length) match.productProcessorGen = { $in: productProcessorGen };
         if (priceRange) match.productPrice = { $gte: priceRange.start, $lte: priceRange.end }
 
-        const sorting: T = { [sort ?? "createdAt"]: diection ?? Direction.DESC }
+        const sorting: T = { [sort ?? "createdAt"]: direction ?? Direction.DESC }
         const result = await this.computerModel.aggregate([
             { $match: match },
             { $sort: sorting },
@@ -322,6 +322,37 @@ export class ProductService {
         return result
     }
 
+    public async getAllProductPcsByAdmin(input: ProductComputerInquiry): Promise<Computers> {
+        const { page, limit, direction, sort } = input;
+        const { productStatus, productType, text } = input.search
+
+        const match: T = {};
+        if (productStatus) match.producStatus = productStatus;
+        if (productType) match.productType = productType;
+        if (text) match.productName = { $regex: new RegExp(text, "i") }
+
+        const sorting: T = {
+            [sort ?? "createdAt"]: direction ?? Direction.DESC
+        }
+
+        const result = await this.computerModel.aggregate([
+            { $match: match },
+            { $sort: sorting },
+            {
+                $facet: {
+                    list: [
+                        { $skip: (page - 1) * limit },
+                        { $limit: limit },
+                        lookUpMember,
+                        {$unwind:"$memberData"}
+                    ],
+                    metaCounter: [{ $count: "total" }]
+                }
+            }
+        ]).exec()
+        if (!result[0] && !result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND)
+        return result[0]
+    }
 
     public async productStatsEdit(_id: ObjectId, modifier: number, dataset: string, productType: ProductType): Promise<any> {
         if (productType === ProductType.PERIPHERAL) {

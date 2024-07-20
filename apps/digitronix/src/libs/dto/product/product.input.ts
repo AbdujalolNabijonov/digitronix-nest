@@ -166,6 +166,14 @@ class PISearch {
     text?: string
 
     @IsOptional()
+    @Field(() => ProductStatus, { nullable: true })
+    productStatus?: ProductStatus
+
+    @IsOptional()
+    @Field(() => ProductType, { nullable: true })
+    productType?: ProductType
+
+    @IsOptional()
     @Field(() => [ProductSeries], { nullable: true })
     productSerie?: ProductSeries[]
 
@@ -212,7 +220,7 @@ export class ProductComputerInquiry {
 
     @IsOptional()
     @Field(() => Direction, { nullable: true })
-    diection?: Direction
+    direction?: Direction
 
     @IsNotEmpty()
     @Field(() => PISearch)
@@ -268,4 +276,15 @@ export class ProductPeripheralInquiry {
     @IsNotEmpty()
     @Field(() => PPISearch)
     search: PPISearch
+}
+
+@InputType()
+class APSearch {
+    @IsOptional()
+    @Field(() => String, { nullable: true })
+    text?: string
+
+    @IsOptional()
+    @Field(()=>ProductType, {nullable:true})
+    productType?:ProductType
 }

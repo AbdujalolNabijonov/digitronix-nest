@@ -344,13 +344,45 @@ export class ProductService {
                         { $skip: (page - 1) * limit },
                         { $limit: limit },
                         lookUpMember,
-                        {$unwind:"$memberData"}
+                        { $unwind: "$memberData" }
                     ],
                     metaCounter: [{ $count: "total" }]
                 }
             }
         ]).exec()
-        if (!result[0] && !result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND)
+        if (!result[0]) throw new InternalServerErrorException(Message.NO_DATA_FOUND)
+        return result[0]
+    }
+
+    public async getAllProductPeripheralsByAdmin(input: ProductPeripheralInquiry): Promise<Peripherals> {
+        const { page, limit, direction, sort, search } = input
+        const { productStatus, productType, text } = search;
+
+        const match: T = {}
+        if (productStatus) match.productStatus = productStatus;
+        if (productType) match.productType = productType;
+        if (text) match.productName = { $regex: new RegExp(text, "i") }
+
+        const sorting = {
+            [sort ?? "createdAt"]: direction ?? Direction.DESC
+        }
+
+        const result = await this.peripheralModel.aggregate([
+            { $match: match },
+            { $sort: sorting },
+            {
+                $facet: {
+                    list: [
+                        { $skip: (page - 1) * limit },
+                        { $limit: limit },
+                        lookUpMember,
+                        { $unwind: "$memberData" }
+                    ],
+                    metaCounter: [{ $count: "total" }]
+                }
+            }
+        ]).exec()
+        if (!result[0]) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
         return result[0]
     }
 

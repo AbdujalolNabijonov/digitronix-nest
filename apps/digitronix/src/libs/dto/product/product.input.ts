@@ -234,6 +234,18 @@ class PPISearch {
     text?: string
 
     @IsOptional()
+    @Field(() => ProductStatus, { nullable: true })
+    productStatus?: ProductStatus
+
+    @IsOptional()
+    @Field(() => ProductType, { nullable: true })
+    productType: ProductType[]
+
+    @IsOptional()
+    @Field(() => ProductSeries, { nullable: true })
+    productSerie: ProductSeries
+
+    @IsOptional()
     @Field(() => [Connectivity], { nullable: true })
     connectivity?: Connectivity[]
 
@@ -276,15 +288,4 @@ export class ProductPeripheralInquiry {
     @IsNotEmpty()
     @Field(() => PPISearch)
     search: PPISearch
-}
-
-@InputType()
-class APSearch {
-    @IsOptional()
-    @Field(() => String, { nullable: true })
-    text?: string
-
-    @IsOptional()
-    @Field(()=>ProductType, {nullable:true})
-    productType?:ProductType
 }

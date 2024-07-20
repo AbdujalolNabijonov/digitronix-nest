@@ -11,7 +11,12 @@ export enum ProductType {
     LAPTOP = "LAPTOP",
     DESKTOP = "DESKTOP",
     GRAPHICS = "GRAPHICS",
-    PERIPHERAL = "PERIPHERAL"
+    PERIPHERAL = "PERIPHERAL",
+    KEYBOARD = "KEYBOARD",
+    MICE = "MICE",
+    AUDIO = "AUDIO",
+    CONTROLLER = "CONTROLLER",
+    GAMINGCHAIR = "GAMINGCHAIR"
 }
 registerEnumType(ProductType, { name: "ProductType" })
 
@@ -75,11 +80,7 @@ export enum ProductSeries {
     INFINITE = "INFINITE",
     TRIDENT = "TIDENT",
     CODEX = "CODEX",
-    META = "META",
-    KEYBOARD = "KEYBOARD",
-    MICE = "MICE",
-    AUDIO = "AUDIO",
-    CONTROLLER = "CONTROLLER"
+    META = "META"
 }
 registerEnumType(ProductSeries, { name: "ProductSeries" })
 

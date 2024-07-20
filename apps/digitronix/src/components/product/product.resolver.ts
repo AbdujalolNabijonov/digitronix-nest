@@ -163,5 +163,14 @@ export class ProductResolver {
         console.log("Query: getAllProductPcsByAdmin");
         return await this.productService.getAllProductPcsByAdmin(input)
     }
-    getAllProductPeripheralsByAdmin() { }
+
+    @Roles(MemberGroup.ADMIN)
+    @UseGuards(RolesGuard)
+    @Query(() => Peripherals)
+    public async getAllProductPeripheralsByAdmin(
+        @Args("input") input: ProductPeripheralInquiry
+    ): Promise<Peripherals> {
+        console.log("Query: getAllProductPeripheralsByAdmin");
+        return await this.productService.getAllProductPeripheralsByAdmin(input)
+    }
 }

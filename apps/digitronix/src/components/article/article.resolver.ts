@@ -55,7 +55,16 @@ export class ArticleResolver {
         return await this.articleService.getAllArticles(input, authMemberId)
     }
 
-    likeTargetArticle() { }
+    @UseGuards(AuthGuard)
+    @Mutation(() => Article)
+    public async likeTargetArticle(
+        @Args("input") input: String,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Article> {
+        console.log("Mutation: likeTargetArticle");
+        const targetArticleId  = shapeIntoMongoObjectId(input)
+        return await this.articleService.likeTargetArticle(targetArticleId, memberId)
+    }
 
     //ADMIN
     createArticleByAdmin() { }

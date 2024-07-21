@@ -14,13 +14,17 @@ import { ViewService } from '../view/view.service';
 import { ViewInput } from '../../libs/dto/view/view.input';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { Direction } from '../../libs/enums/common.enum';
+import { LikeService } from '../like/like.service';
+import { LikeInput } from '../../libs/dto/like/like.input';
+import { LikeGroup } from '../../libs/enums/like.enum';
 
 @Injectable()
 export class ArticleService {
     constructor(
         @InjectModel("Article") private readonly articleModel: Model<Article>,
         private readonly memberService: MemberService,
-        private readonly viewSevice: ViewService
+        private readonly viewSevice: ViewService,
+        private readonly likeService: LikeService
     ) { }
 
     public async createArticle(input: ArticleInput, memberId: ObjectId): Promise<Article> {
@@ -71,7 +75,7 @@ export class ArticleService {
         let result = await this.articleModel.aggregate([
             { $match: search },
             lookUpMember,
-            lookupAuthMemberLiked(memberId, "_id"),
+            lookupAuthMemberLiked(memberId),
             { $unwind: "$memberData" }
         ]).exec()
         if (!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
@@ -93,7 +97,7 @@ export class ArticleService {
     public async getAllArticles(input: ArticlesInquiry, authMemberId: ObjectId): Promise<Articles> {
 
         const { page, limit, direction, sort, search } = input
-        let { articleCategory, articleStatus, text, memberId } = input.search;
+        let { articleCategory, articleStatus, text, memberId } = search;
         memberId = shapeIntoMongoObjectId(memberId);
 
         const match: T = {}
@@ -112,7 +116,7 @@ export class ArticleService {
                     list: [
                         { $skip: (page - 1) * limit },
                         { $limit: limit },
-                        lookupAuthMemberLiked(authMemberId, "_id"),
+                        lookupAuthMemberLiked(authMemberId),
                         lookUpMember,
                         { $unwind: "$memberData" }
                     ],
@@ -123,6 +127,27 @@ export class ArticleService {
 
         if (!result[0]) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
         return result[0]
+    }
+
+    public async likeTargetArticle(targetArticleId: ObjectId, memberId: ObjectId): Promise<Article> {
+        const search = {
+            _id: targetArticleId,
+            articleStatus: ArticleStatus.ACTIVE
+        }
+
+        const existance = await this.articleModel.findOne(search).exec();
+        if (!existance) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        const likeInput: LikeInput = {
+            memberId,
+            likeTargetId: targetArticleId,
+            likeGroup: LikeGroup.ARTICLE
+        }
+        const modifier = await this.likeService.likeTargetToggle(likeInput);
+        const result = await this.articleStatsEditor(targetArticleId, modifier, "articleLikes")
+
+        if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+        return result
     }
 
     public async articleStatsEditor(targetArticleId: ObjectId, modifier: number, dataSet: string): Promise<Article> {

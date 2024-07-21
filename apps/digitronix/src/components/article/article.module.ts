@@ -6,6 +6,7 @@ import articleSchema from '../../schema/Article.model';
 import { AuthModule } from '../auth/auth.module';
 import { MemberModule } from '../member/member.module';
 import { ViewModule } from '../view/view.module';
+import { LikeModule } from '../like/like.module';
 
 @Module({
   imports:
@@ -13,7 +14,8 @@ import { ViewModule } from '../view/view.module';
       MongooseModule.forFeature([{ schema: articleSchema, name: "Article" }]),
       AuthModule,
       MemberModule,
-      ViewModule
+      ViewModule,
+      LikeModule
     ],
   providers: [ArticleResolver, ArticleService]
 })

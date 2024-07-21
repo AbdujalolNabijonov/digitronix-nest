@@ -16,5 +16,6 @@ export enum Message {
     ONLY_SPECIFIC_ROLES_ALLOWED = 'Allowed only for members with specific roles!',
     NOT_ALLOWED_REQUEST = 'Not allowed Request!',
     PROVIDE_ALLOWED_FORMAT = 'Please provide jpg, jpeg, or png images!',
-    SELF_SUBSCRIPTION_DENIED = 'Self subscription is denied!'
+    SELF_SUBSCRIPTION_DENIED = 'Self subscription is denied!',
+    ALREADY_SUBSCRIBED = "You have already subscribed !"
 }

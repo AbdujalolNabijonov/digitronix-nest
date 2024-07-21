@@ -9,6 +9,9 @@ import { ObjectId } from 'mongoose';
 import { UpdateArticle } from '../../libs/dto/article/article.update';
 import { WithoutGuards } from '../auth/guards/without.guard';
 import { shapeIntoMongoObjectId } from '../../libs/types/config';
+import { Roles } from '../auth/decorators/auth.roles';
+import { MemberType } from '../../libs/enums/member.enum';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @Resolver()
 export class ArticleResolver {
@@ -62,13 +65,39 @@ export class ArticleResolver {
         @AuthMember("_id") memberId: ObjectId
     ): Promise<Article> {
         console.log("Mutation: likeTargetArticle");
-        const targetArticleId  = shapeIntoMongoObjectId(input)
+        const targetArticleId = shapeIntoMongoObjectId(input)
         return await this.articleService.likeTargetArticle(targetArticleId, memberId)
     }
 
     //ADMIN
-    createArticleByAdmin() { }
-    updateArticleByAdmin() { }
-    getAllArticlesByAdmin() { }
-    removeArticelByAdmin() { }
+    @Roles(MemberType.ADMIN)
+    @UseGuards(RolesGuard)
+    @Mutation(() => Article)
+    public async updateArticleByAdmin(
+        @Args("input") input: UpdateArticle
+    ): Promise<Article> {
+        console.log("Mutation: updateArticleByAdmin")
+        return await this.articleService.updateArticleByAdmin(input)
+    }
+
+    @Roles(MemberType.ADMIN)
+    @UseGuards(RolesGuard)
+    @Query(()=>Articles)
+    public async getAllArticlesByAdmin(
+        @Args("input") input:ArticlesInquiry
+    ):Promise<Articles> { 
+        console.log("Query: getAllArticlesByAdmin");
+        return await this.articleService.getAllArticlesByAdmin(input)
+    }
+
+    @Roles(MemberType.ADMIN)
+    @UseGuards(RolesGuard)
+    @Mutation(()=>Article)
+    public async removeArticelByAdmin(
+        @Args("input") input:String
+    ):Promise<Article> { 
+        console.log("Mutation: removeArticelByAdmin");
+        const targetArticleId = shapeIntoMongoObjectId(input)
+        return await this.articleService.removeArticelByAdmin(targetArticleId)
+    }
 }

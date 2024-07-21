@@ -100,7 +100,7 @@ export class ArticleService {
         let { articleCategory, articleStatus, text, memberId } = search;
         memberId = shapeIntoMongoObjectId(memberId);
 
-        const match: T = {}
+        const match: T = {articleStatus:ArticleStatus.ACTIVE}
         if (memberId) match.memberId = memberId
         if (articleCategory) match.articleCategory = articleCategory;
         if (articleStatus) match.articleStatus = articleStatus;
@@ -150,6 +150,25 @@ export class ArticleService {
         return result
     }
 
+    //ADMIN
+    public async updateArticleByAdmin(input: UpdateArticle): Promise<Article> {
+        const search = {
+            _id: input._id,
+            articleStatus: ArticleStatus.ACTIVE
+        }
+
+        const existance = await this.articleModel.findOne(search);
+        if (!existance) throw new InternalServerErrorException(Message.NO_DATA_FOUND)
+        if (input.articleStatus === ArticleStatus.DELETE) {
+            input.deletedAt = moment().toDate()
+            await this.memberService.memberStatsEdit(existance.memberId, -1, "memberArticles")
+        }
+
+        const result = await this.articleModel.findOneAndUpdate(search, input, { new: true });
+        if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+        return result
+    }
+
     public async articleStatsEditor(targetArticleId: ObjectId, modifier: number, dataSet: string): Promise<Article> {
         const search: T = {
             _id: targetArticleId,
@@ -158,5 +177,54 @@ export class ArticleService {
         const updatedDocument = await this.articleModel.findOneAndUpdate(search, { $inc: { [dataSet]: modifier } }, { new: true }).exec();
         if (!updatedDocument) throw new InternalServerErrorException(Message.UPDATE_FAILED)
         return updatedDocument
+    }
+
+    public async getAllArticlesByAdmin(input: ArticlesInquiry): Promise<Articles> {
+        const { page, limit, direction, sort, search } = input
+        const { articleStatus, articleCategory, text } = search
+
+        const match: T = {}
+        if (articleCategory) match.articleCategory = articleCategory;
+        if (articleStatus) match.articleStatus = articleStatus;
+        if (text) match.articleTitle = { $regex: new RegExp(text, "i") };
+
+        const sorting: T = {
+            [sort ?? "careatedAt"]: direction ?? Direction.DESC
+        }
+
+        const result = await this.articleModel.aggregate([
+            { $match: match },
+            { $sort: sorting },
+            {
+                $facet: {
+                    list: [
+                        { $skip: (page - 1) * limit },
+                        { $limit: limit },
+                        lookUpMember,
+                        { $unwind: "$memberData" }
+                    ],
+                    metaCounter: [
+                        { $count: "total" }
+                    ]
+                }
+            }
+        ]).exec();
+
+        if (!result[0]) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        return result[0]
+    }
+
+    public async removeArticelByAdmin(targetArticleId): Promise<Article> {
+
+        const search: T = {
+            _id: targetArticleId,
+            articleStatus: ArticleStatus.DELETE
+        }
+        const existance = await this.articleModel.findOne(search);
+
+        if (!existance) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        const result = await this.articleModel.findOneAndDelete(search).exec()
+        if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
+        return result
     }
 }

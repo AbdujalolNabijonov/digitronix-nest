@@ -8,6 +8,7 @@ export class UpdateArticle {
     @IsNotEmpty()
     @Field(() => String)
     _id: ObjectId
+    
 
     @IsOptional()
     @Field(() => ArticleStatus, { nullable: true })
@@ -26,5 +27,6 @@ export class UpdateArticle {
     @IsOptional()
     @Field(() => String, { nullable: true })
     articleImage?: string;
-    
+
+    deletedAt: Date
 }

@@ -2,8 +2,8 @@ import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { ArticleService } from './article.service';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/guards/auth.guard';
-import { Article } from '../../libs/dto/article/article';
-import { ArticleInput } from '../../libs/dto/article/article.input';
+import { Article, Articles } from '../../libs/dto/article/article';
+import { ArticleInput, ArticlesInquiry } from '../../libs/dto/article/article.input';
 import { AuthMember } from '../auth/decorators/auth.member';
 import { ObjectId } from 'mongoose';
 import { UpdateArticle } from '../../libs/dto/article/article.update';
@@ -44,7 +44,17 @@ export class ArticleResolver {
         const targetArticleId = shapeIntoMongoObjectId(input);
         return await this.articleService.getArticle(targetArticleId, memberId)
     }
-    getAllArticles() { }
+
+    @UseGuards(WithoutGuards)
+    @Query(() => Articles)
+    public async getAllArticles(
+        @Args("input") input: ArticlesInquiry,
+        @AuthMember("_id") authMemberId: ObjectId
+    ): Promise<Articles> {
+        console.log("Query: getAllArticles")
+        return await this.articleService.getAllArticles(input, authMemberId)
+    }
+
     likeTargetArticle() { }
 
     //ADMIN

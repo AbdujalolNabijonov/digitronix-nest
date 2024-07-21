@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Article } from '../../libs/dto/article/article';
-import { ArticleInput } from '../../libs/dto/article/article.input';
+import { Article, Articles } from '../../libs/dto/article/article';
+import { ArticleInput, ArticlesInquiry } from '../../libs/dto/article/article.input';
 import { Model, ObjectId } from 'mongoose';
 import { Message } from '../../libs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -9,10 +9,11 @@ import { UpdateArticle } from '../../libs/dto/article/article.update';
 import { T } from '../../libs/types/general';
 import { ArticleStatus } from '../../libs/enums/article.enum';
 import * as moment from 'moment';
-import { lookupAuthMemberLiked, lookUpMember } from '../../libs/types/config';
+import { lookupAuthMemberLiked, lookUpMember, shapeIntoMongoObjectId } from '../../libs/types/config';
 import { ViewService } from '../view/view.service';
 import { ViewInput } from '../../libs/dto/view/view.input';
 import { ViewGroup } from '../../libs/enums/view.enum';
+import { Direction } from '../../libs/enums/common.enum';
 
 @Injectable()
 export class ArticleService {
@@ -86,6 +87,41 @@ export class ArticleService {
                 result[0].articleViews++
             }
         }
+        return result[0]
+    }
+
+    public async getAllArticles(input: ArticlesInquiry, authMemberId: ObjectId): Promise<Articles> {
+
+        const { page, limit, direction, sort, search } = input
+        let { articleCategory, articleStatus, text, memberId } = input.search;
+        memberId = shapeIntoMongoObjectId(memberId);
+
+        const match: T = {}
+        if (memberId) match.memberId = memberId
+        if (articleCategory) match.articleCategory = articleCategory;
+        if (articleStatus) match.articleStatus = articleStatus;
+        if (text) match.articleTitle = { $regex: new RegExp(text, "i") };
+
+        const sorting = { [sort ?? "createdAt"]: direction ?? Direction.DESC }
+
+        const result = await this.articleModel.aggregate([
+            { $match: match },
+            { $sort: sorting },
+            {
+                $facet: {
+                    list: [
+                        { $skip: (page - 1) * limit },
+                        { $limit: limit },
+                        lookupAuthMemberLiked(authMemberId, "_id"),
+                        lookUpMember,
+                        { $unwind: "$memberData" }
+                    ],
+                    metaCounter: [{ $count: "total" }]
+                }
+            }
+        ]).exec();
+
+        if (!result[0]) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
         return result[0]
     }
 

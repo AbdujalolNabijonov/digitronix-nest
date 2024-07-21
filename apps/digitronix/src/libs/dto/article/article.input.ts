@@ -1,6 +1,9 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { IsNotEmpty, Length } from "class-validator";
-import { ArticleCategory } from "../../enums/article.enum";
+import { IsIn, IsNotEmpty, IsOptional, Length } from "class-validator";
+import { ArticleCategory, ArticleStatus } from "../../enums/article.enum";
+import { Direction } from "../../enums/common.enum";
+import { avaibleArticleSorts } from "../../types/config";
+import { ObjectId } from "mongoose";
 
 @InputType()
 export class ArticleInput {
@@ -21,4 +24,45 @@ export class ArticleInput {
     @IsNotEmpty()
     @Field(() => String)
     articleImage: string
+}
+@InputType()
+class ASearch {
+    @IsOptional()
+    @Field(() => String, { nullable: true })
+    text?: string
+
+    @IsOptional()
+    @Field(() => ArticleCategory, { nullable: true })
+    articleCategory?: ArticleCategory
+
+    @IsOptional()
+    @Field(() => ArticleStatus, { nullable: true })
+    articleStatus?: ArticleStatus
+
+    @IsOptional()
+    @Field(() => String, { nullable: true })
+    memberId?: ObjectId
+}
+
+@InputType()
+export class ArticlesInquiry {
+    @IsNotEmpty()
+    @Field(() => Number)
+    page: number
+
+    @IsNotEmpty()
+    @Field(() => Number)
+    limit: number
+
+    @IsOptional()
+    @Field(() => Direction, { nullable: true })
+    direction?: Direction
+
+    @IsOptional()
+    @IsIn(avaibleArticleSorts)
+    @Field(() => String, { nullable: true })
+    sort?: string
+
+    @Field(() => ASearch)
+    search: ASearch
 }

@@ -24,6 +24,14 @@ export const avaibleMimeType = [
     "image/png"
 ]
 
+export const avaibleArticleSorts = [
+    "createdAt",
+    "updatedAt",
+    "articleLikes",
+    "articleViews",
+    "articleComments"
+]
+
 
 //reuseable 
 export function shapeIntoMongoObjectId(target: any) {

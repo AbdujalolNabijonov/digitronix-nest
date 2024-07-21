@@ -48,3 +48,18 @@ export class Article {
     @Field(() => Date)
     createdAt: Date
 }
+
+@ObjectType()
+class ArticleTotal {
+    @Field(() => Number, { nullable: true })
+    total?: number
+}
+
+@ObjectType()
+export class Articles {
+    @Field(() => [Article])
+    list: Article[]
+
+    @Field(() => [ArticleTotal])
+    metaCounter: ArticleTotal[]
+}

@@ -188,7 +188,7 @@ export class MemberService {
     }
 
     public async checkMember(memberId: ObjectId): Promise<Member> {
-        return await this.memberModel.findById(memberId).lean().exec();
+        return await this.memberModel.findOne({ _id: memberId, memberStatus: MemberStatus.ACTIVE }).lean().exec();
     }
     public async memberStatsEdit(memberId: ObjectId, modifier: number, dataset: string): Promise<Member> {
         const member = await this.memberModel

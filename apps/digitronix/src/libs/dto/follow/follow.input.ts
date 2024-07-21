@@ -4,9 +4,8 @@ import { Direction } from "../../enums/common.enum";
 
 @InputType()
 class FSearch {
-    @IsOptional()
-    @Field(() => String, { nullable: true })
-    text?: string
+    @Field(() => String)
+    memberId: string
 }
 
 @InputType()
@@ -30,5 +29,5 @@ export class FollowInquiry {
 
     @IsNotEmpty()
     @Field(() => FSearch)
-    seach: FSearch
+    search: FSearch
 }

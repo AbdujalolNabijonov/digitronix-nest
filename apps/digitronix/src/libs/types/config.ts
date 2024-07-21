@@ -77,3 +77,59 @@ export const lookUpMember = {
     }
 }
 
+export const lookupFollowingMemberData = {
+    $lookup: {
+        from: "members",
+        localField: "followingId",
+        foreignField: "_id",
+        as: "followingData"
+    }
+}
+
+export const lookupFollowerMemberData = {
+    $lookup: {
+        from: "members",
+        localField: "followerId",
+        foreignField: "_id",
+        as: "followerData"
+    }
+}
+
+interface LookupAuthFollowed {
+    followerId: T,
+    followingId: string,
+}
+export const lookUpAuthMemberFollowed = (input: LookupAuthFollowed) => {
+    const { followerId, followingId } = input
+    return {
+        $lookup: {
+            from: "follows",
+            let: {
+                localFollowingId: followingId,
+                localFollowerId: followerId,
+                meFollowed: true
+            },
+            pipeline: [
+                {
+                    $match: {
+                        $expr: {
+                            $and: [
+                                { $eq: ["$followingId", "$$localFollowingId"] }, { $eq: ["$followerId", "$$localFollowerId"] }
+                            ]
+                        }
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        followerId: 1,
+                        followingId: 1,
+                        myFollowing: "$$meFollowed"
+                    }
+                }
+            ],
+            as: "meFollowed"
+        }
+    }
+}
+

@@ -7,7 +7,7 @@ import { ObjectId } from 'mongoose';
 import { shapeIntoMongoObjectId } from '../../libs/types/config';
 import { WithoutGuards } from '../auth/guards/without.guard';
 import { FollowInquiry } from '../../libs/dto/follow/follow.input';
-import { Follower } from '../../libs/dto/follow/follow';
+import { Follower, Followers, Followings } from '../../libs/dto/follow/follow';
 
 @Resolver()
 export class FollowResolver {
@@ -37,24 +37,26 @@ export class FollowResolver {
         return await this.followService.unfollowMember(targetMemberId, memberId)
     }
 
-    // @UseGuards(WithoutGuards)
-    // @Query(() => Followings)
-    // public async getFollowingMembers(
-    //     @Args("input") input: FollowInquiry,
-    //     @AuthMember("_id") memberId: ObjectId
-    // ): Promise<Follows> {
-    //     console.log("Query: getFollowingMembers")
-    //     return await this.followService.getFollowingMembers(input, memberId)
-    // }
+    @UseGuards(WithoutGuards)
+    @Query(() => Followings)
+    public async getFollowingMembers(
+        @Args("input") input: FollowInquiry,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Followings> {
+        console.log("Query: getFollowingMembers")
+        const targetMemberId = shapeIntoMongoObjectId(input.search.memberId)
+        return await this.followService.getFollowingMembers(input, targetMemberId, memberId)
+    }
 
-    // @UseGuards(WithoutGuards)
-    // @Query(() => Followers)
-    // public async getFollowerMembers(
-    //     @Args("input") input: FollowInquiry,
-    //     @AuthMember("_id") memberId: ObjectId
-    // ): Promise<Follows> {
-    //     console.log("Query: getFollowerMembers")
-    //     return await this.followService.getFollowerMembers(input, memberId)
-    // }
+    @UseGuards(WithoutGuards)
+    @Query(() => Followers)
+    public async getFollowerMembers(
+        @Args("input") input: FollowInquiry,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Followers> {
+        console.log("Query: getFollowerMembers")
+        const targetMemberId = shapeIntoMongoObjectId(input.search.memberId)
+        return await this.followService.getFollowerMembers(input, targetMemberId, memberId)
+    }
 
 }

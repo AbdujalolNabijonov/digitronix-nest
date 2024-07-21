@@ -1,9 +1,12 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Search } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { Follower, Following } from '../../libs/dto/follow/follow';
+import { Follower, Followers, Following, Followings } from '../../libs/dto/follow/follow';
 import { MemberService } from '../member/member.service';
 import { Message } from '../../libs/common';
+import { FollowInquiry } from '../../libs/dto/follow/follow.input';
+import { Direction } from '../../libs/enums/common.enum';
+import { lookUpAuthMemberFollowed, lookupAuthMemberLiked, lookupFollowerMemberData, lookupFollowingMemberData } from '../../libs/types/config';
 
 @Injectable()
 export class FollowService {
@@ -59,14 +62,73 @@ export class FollowService {
 
             await this.memberService.memberStatsEdit(targetMemberId, -1, "memberFollowers")
             await this.memberService.memberStatsEdit(memberId, -1, "memberFollowings")
-            
+
             return result
         } else {
             throw new BadRequestException(Message.SOMETHING_WENT_WRONG)
         }
     }
-    // getFollowingMembers
-    // getFollowerMembers
+
+
+
+    public async getFollowingMembers(input: FollowInquiry, targetMemberId: ObjectId, memberId: ObjectId): Promise<Followings> {
+        const { page, limit, direction, sort } = input;
+
+        const sorting = {
+            [sort ?? "createdAt"]: direction ?? Direction.DESC
+        }
+        const result = await this.followModel.aggregate([
+            { $match: { followerId: targetMemberId } },
+            { $sort: sorting },
+            {
+                $facet: {
+                    list: [
+                        { $skip: (page - 1) * limit },
+                        { $limit: limit },
+                        lookupFollowingMemberData,
+                        lookupAuthMemberLiked(memberId, "$followingId"),
+                        lookUpAuthMemberFollowed({ followerId: memberId, followingId: "$followingId" }),
+                        { $unwind: "$followingData" }
+
+                    ],
+                    metaCounter: [
+                        { $count: "total" }
+                    ]
+                }
+            }
+        ]).exec()
+        if (!result[0]) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        return result[0]
+    }
+
+    public async getFollowerMembers(input: FollowInquiry, targetMemberId: ObjectId, memberId: ObjectId): Promise<Followers> {
+        const { page, limit, direction, sort } = input
+
+        const sorting = {
+            [sort ?? "createdAt"]: direction ?? Direction.DESC
+        }
+        const result = await this.followModel.aggregate([
+            { $match: { followingId: targetMemberId } },
+            { $sort: sorting },
+            {
+                $facet: {
+                    list: [
+                        { $skip: (page - 1) * limit },
+                        { $limit: limit },
+                        lookupFollowerMemberData,
+                        lookupAuthMemberLiked(memberId, "$followerId"),
+                        lookUpAuthMemberFollowed({ followerId: memberId, followingId: "$followerId" }),
+                        { $unwind: "$followerData" }
+                    ],
+                    metaCounter: [
+                        { $count: "total" }
+                    ]
+                }
+            }
+        ]).exec()
+        if (!result[0]) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        return result[0]
+    }
 
     public async checkExistance(targetMemberId: ObjectId, memberId: ObjectId): Promise<Follower | null> {
         const search = {

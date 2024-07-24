@@ -1,13 +1,14 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CommentService } from './comment.service';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/guards/auth.guard';
-import { CommentInput } from '../../libs/dto/comment/comment.input';
+import { CommentInput, CommentInquiry } from '../../libs/dto/comment/comment.input';
 import { AuthMember } from '../auth/decorators/auth.member';
 import { ObjectId } from 'mongoose';
 import { shapeIntoMongoObjectId } from '../../libs/types/config';
 import { UpdateComment } from '../../libs/dto/comment/comment.update';
-import { Comment } from '../../libs/dto/comment/comment';
+import { Comment, Comments } from '../../libs/dto/comment/comment';
+import { WithoutGuards } from '../auth/guards/without.guard';
 
 @Resolver()
 export class CommentResolver {
@@ -34,8 +35,27 @@ export class CommentResolver {
         console.log("Mutation: updateComment")
         return await this.commentService.updateComment(input, memberId)
     }
-    getComments() { }
-    likeTargetComment() { }
+
+    @UseGuards(WithoutGuards)
+    @Query(returns => Comments)
+    public async getAllComments(
+        @Args("input") input: CommentInquiry,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Comments> {
+        console.log("Query: getAllComments");
+        return await this.commentService.getAllComments(input, memberId)
+    }
+
+    @UseGuards(AuthGuard)
+    @Mutation(() => Comment)
+    public async likeTargetComment(
+        @Args("input") input: String,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Comment> {
+        console.log("Mutation: likeTargetComment");
+        const likeTargetId = shapeIntoMongoObjectId(input)
+        return await this.commentService.likeTargetComment(likeTargetId, memberId)
+    }
 
     //Admin
     removeCommmentByAdmin() { }

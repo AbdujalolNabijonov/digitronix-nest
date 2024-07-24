@@ -7,10 +7,6 @@ const commentSchema = new Schema({
         enum: CommentStatus,
         default: CommentStatus.ACTIVE,
     },
-    commentRank: {
-        type: Number,
-        default: 0
-    },
     commentGroup: {
         type: String,
         enum: CommentGroup,
@@ -31,6 +27,14 @@ const commentSchema = new Schema({
         type: Schema.Types.ObjectId,
         required: true,
     },
+    commentRank: {
+        type: Number,
+        default: 0
+    },
+    commentLikes: {
+        type: Number,
+        default: 0
+    }
 }, { timestamps: true })
 
 export default commentSchema

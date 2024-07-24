@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, Search } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { CommentInput } from '../../libs/dto/comment/comment.input';
+import { CommentInput, CommentInquiry } from '../../libs/dto/comment/comment.input';
 import { Message } from '../../libs/common';
 import { CommentGroup, CommentStatus } from '../../libs/enums/comment.enum';
 import { ArticleService } from '../article/article.service';
@@ -9,8 +9,12 @@ import { MemberService } from '../member/member.service';
 import { ProductService } from '../product/product.service';
 import { ProductType } from '../../libs/enums/product.enum';
 import { UpdateComment } from '../../libs/dto/comment/comment.update';
-import { Comment } from '../../libs/dto/comment/comment';
+import { Comment, Comments } from '../../libs/dto/comment/comment';
 import * as moment from 'moment';
+import { lookupAuthMemberLiked, lookUpMember, shapeIntoMongoObjectId } from '../../libs/types/config';
+import { T } from '../../libs/types/general';
+import { LikeService } from '../like/like.service';
+import { LikeInput } from '../../libs/dto/like/like.input';
 
 @Injectable()
 export class CommentService {
@@ -18,7 +22,8 @@ export class CommentService {
         @InjectModel("Comment") private readonly commentModel: Model<Comment>,
         private readonly articleService: ArticleService,
         private readonly memberService: MemberService,
-        private readonly productSevice: ProductService
+        private readonly productSevice: ProductService,
+        private readonly likeService: LikeService
     ) { }
 
     public async createComment(input: CommentInput, memberId: ObjectId): Promise<Comment> {
@@ -55,10 +60,56 @@ export class CommentService {
         const result = await this.commentModel.findOneAndUpdate(search, input, { new: true }).exec();
         if (!result) throw new InternalServerErrorException(Message.CREATE_FAILED);
         return result
-
     }
 
-    public async commentStatsEdit() { }
+    public async getAllComments(input: CommentInquiry, memberId: ObjectId): Promise<Comments> {
+        const match: T = {
+            commentTargetId: shapeIntoMongoObjectId(input.commentTargetId),
+            commentStatus: CommentStatus.ACTIVE
+        }
+        const result = await this.commentModel.aggregate([
+            { $match: match },
+            {
+                $facet: {
+                    list: [
+                        { $skip: (input.page - 1) * input.limit },
+                        { $limit: input.limit },
+                        lookUpMember,
+                        lookupAuthMemberLiked(memberId, "$_id"),
+                        { $unwind: "$memberData" }
+                    ],
+                    metaCounter: [
+                        { $count: "total" }
+                    ]
+
+                }
+            }
+        ])
+
+        if (!result[0]) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        return result[0]
+    }
+
+    public async likeTargetComment(likeTargetId: ObjectId, memberId: ObjectId): Promise<Comment> {
+        const search = {
+            _id: likeTargetId,
+            commentStatus: CommentStatus.ACTIVE
+        }
+        const existance = await this.commentModel.findOne(search).lean().exec()
+        if (!existance) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        const likeInput: LikeInput = {
+            memberId,
+            likeTargetId,
+            likeGroup: existance.commentGroup
+        }
+        const modifier = await this.likeService.likeTargetToggle(likeInput);
+
+        const result = await this.commentStatsEdit(likeTargetId, modifier, "commentLikes");
+        if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+        return result
+    }
+
     public async targetRefStatsEdit(commentGroup: string, commentTargetId: ObjectId, modifier: number): Promise<void> {
         switch (commentGroup) {
             case CommentGroup.ARTICLE:
@@ -80,4 +131,9 @@ export class CommentService {
                 break;
         }
     }
+
+    public async commentStatsEdit(commentId: ObjectId, modifier: number, dataSet: string): Promise<Comment> {
+        return await this.commentModel.findByIdAndUpdate(commentId, { $inc: { [dataSet]: modifier } }, { new: true }).exec();
+    }
+
 }

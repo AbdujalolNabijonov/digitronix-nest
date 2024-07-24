@@ -17,6 +17,9 @@ import { LikeModule } from '../like/like.module';
       ViewModule,
       LikeModule
     ],
-  providers: [ArticleResolver, ArticleService]
+  providers: [ArticleResolver, ArticleService],
+  exports:[
+    ArticleService
+  ]
 })
 export class ArticleModule { }

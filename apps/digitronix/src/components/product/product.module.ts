@@ -18,6 +18,9 @@ import { ViewModule } from '../view/view.module';
     LikeModule,
     ViewModule
   ],
-  providers: [ProductResolver, ProductService]
+  providers: [ProductResolver, ProductService],
+  exports:[
+    ProductService
+  ]
 })
 export class ProductModule { }

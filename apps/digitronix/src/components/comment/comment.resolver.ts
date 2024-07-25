@@ -9,6 +9,9 @@ import { shapeIntoMongoObjectId } from '../../libs/types/config';
 import { UpdateComment } from '../../libs/dto/comment/comment.update';
 import { Comment, Comments } from '../../libs/dto/comment/comment';
 import { WithoutGuards } from '../auth/guards/without.guard';
+import { Roles } from '../auth/decorators/auth.roles';
+import { MemberGroup } from '../../libs/types/member';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @Resolver()
 export class CommentResolver {
@@ -58,5 +61,14 @@ export class CommentResolver {
     }
 
     //Admin
-    removeCommmentByAdmin() { }
+    @Roles(MemberGroup.ADMIN)
+    @UseGuards(RolesGuard)
+    @Mutation(()=>Comment)
+    public async removeCommmentByAdmin(
+        @Args("input") input:String
+    ):Promise<Comment> { 
+        console.log("Mutation: removeCommmentByAdmin");
+        const commentId = shapeIntoMongoObjectId(input);
+        return await this.commentService.removeCommmentByAdmin(commentId)
+    }
 }

@@ -63,10 +63,10 @@ export class CommentService {
     }
 
     public async getAllComments(input: CommentInquiry, memberId: ObjectId): Promise<Comments> {
-        const match: T = {
-            commentTargetId: shapeIntoMongoObjectId(input.commentTargetId),
-            commentStatus: CommentStatus.ACTIVE
-        }
+        const { commentTargetId } = input.search;
+        const match: T = { commentStatus: CommentStatus.ACTIVE }
+        if (commentTargetId) match.commentTargetId = shapeIntoMongoObjectId(commentTargetId);
+
         const result = await this.commentModel.aggregate([
             { $match: match },
             {
@@ -130,6 +130,13 @@ export class CommentService {
             default:
                 break;
         }
+    }
+
+    public async removeCommmentByAdmin(commentId: ObjectId): Promise<Comment> {
+        const result = await this.commentModel.findByIdAndDelete(commentId);
+        if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED)
+        await this.targetRefStatsEdit(result.commentGroup, result.commentTargetId, -1)
+        return result
     }
 
     public async commentStatsEdit(commentId: ObjectId, modifier: number, dataSet: string): Promise<Comment> {

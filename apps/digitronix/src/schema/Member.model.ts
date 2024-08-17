@@ -6,6 +6,9 @@ const MemberSchema = new Schema({
     memberFullName: {
         type: String
     },
+    memberEmail: {
+        type: String,
+    },
     memberStatus: {
         type: String,
         enum: MemberStatus,

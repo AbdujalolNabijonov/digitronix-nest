@@ -13,6 +13,9 @@ export class Member {
     @Field(() => String, { nullable: true })
     memberFullName?: string
 
+    @Field(() => String, { nullable: true })
+    memberEmail?: string
+
     @Field(() => MemberStatus)
     memberStatus: string
 

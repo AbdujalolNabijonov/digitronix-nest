@@ -26,7 +26,7 @@ export class MemberService {
         private readonly likeService: LikeService,
         private readonly viewService: ViewService
     ) { };
-
+    s
     public async signup(input: MemberInput): Promise<Member | Error> {
         input["memberPassword"] = await this.authService.hashPassword(input.memberPassword);
         try {
@@ -35,19 +35,21 @@ export class MemberService {
             return member
         } catch (err: any) {
             console.log("Error, Service.model:", err.message);
-            return new Error(Message.USED_MEMBER_OR_PHONE)
+            throw new Error(Message.USED_MEMBER_OR_PHONE)
         }
     }
 
     public async login(input: LoginInput): Promise<Member | Error> {
         try {
-            const member: Member = await this.memberModel.findOne({ memberNick: input.memberNick }).exec();
-            if (!member) {
-                throw new Error(Message.NO_DATA_FOUND);
-            }
+            let member: Member;
+            if (input.memberEmail) { member = await this.memberModel.findOne({ memberEmail: input.memberEmail, memberStatus: MemberStatus.ACTIVE }).exec() }
+            else if (input.memberNick) { member = await this.memberModel.findOne({ memberNick: input.memberNick, memberStatus: MemberStatus.ACTIVE }).exec() }
+
+            if (!member) { throw new Error(Message.NO_DATA_FOUND); }
             const isCorrectPassword = await this.authService.comparePassword(input.memberPassword, member.memberPassword);
-            if (!isCorrectPassword) {
-                throw new Error(Message.WRONG_PASSWORD)
+            if (!isCorrectPassword) { throw new Error(Message.WRONG_PASSWORD) }
+            else if (member.memberStatus === MemberStatus.BLOCK) {
+                throw new Error("You have been blocked!")
             } else {
                 member.accessToken = await this.authService.jwtGenerator(member);
                 return member

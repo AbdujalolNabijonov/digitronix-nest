@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { ProductComputerInquiry, ProductPCInput, ProductPeripheralInquiry, ProductPerpheralInput } from '../../libs/dto/product/product.input';
+import { ComputerInput, ComputerInquiry, ProductPeripheralInquiry, ProductPerpheralInput } from '../../libs/dto/product/product.input';
 import { Computer, Computers, Peripheral, Peripherals } from '../../libs/dto/product/product';
 import { MemberService } from '../member/member.service';
 import { Message } from '../../libs/common';
@@ -28,7 +28,7 @@ export class ProductService {
         private readonly viewService: ViewService
     ) { }
 
-    public async createPcProduct(input: ProductPCInput): Promise<Computer | Error> {
+    public async createDevice(input: ComputerInput): Promise<Computer | Error> {
         try {
             const newComputer = await this.computerModel.create(input)
             if (newComputer) {
@@ -155,7 +155,7 @@ export class ProductService {
         return result
     }
 
-    public async getAllProductPcs(input: ProductComputerInquiry, memberId: ObjectId): Promise<Computers> {
+    public async getAllProductPcs(input: ComputerInquiry, memberId: ObjectId): Promise<Computers> {
         const { page, limit, sort, direction } = input;
         const {
             text,
@@ -322,12 +322,12 @@ export class ProductService {
         return result
     }
 
-    public async getAllProductPcsByAdmin(input: ProductComputerInquiry): Promise<Computers> {
+    public async getAllComputersByAdmin(input: ComputerInquiry): Promise<Computers> {
         const { page, limit, direction, sort } = input;
         const { productStatus, productType, text } = input.search
 
         const match: T = {};
-        if (productStatus) match.producStatus = productStatus;
+        if (productStatus) match.productStatus = productStatus;
         if (productType) match.productType = productType;
         if (text) match.productName = { $regex: new RegExp(text, "i") }
 
@@ -354,7 +354,7 @@ export class ProductService {
         return result[0]
     }
 
-    public async getAllProductPeripheralsByAdmin(input: ProductPeripheralInquiry): Promise<Peripherals> {
+    public async getAllPeripheralsByAdmin(input: ProductPeripheralInquiry): Promise<Peripherals> {
         const { page, limit, direction, sort, search } = input
         const { productStatus, productType, text } = search;
 

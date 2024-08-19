@@ -7,71 +7,27 @@ export enum ProductStatus {
 }
 registerEnumType(ProductStatus, { name: "ProductStatus" })
 
-export enum ProductType {
-    LAPTOP = "LAPTOP",
-    DESKTOP = "DESKTOP",
-    PERIPHERAL = "PERIPHERAL"
-}
-registerEnumType(ProductType, { name: "ProductType" })
-
-export enum PeripheralCategory {
-    GRAPHICS = "GRAPHICS",
+export enum ProductCategory{
+    LAPTOP="LAPTOP",
+    DESKTOP="DESKTOP",
+    GRAPHICS="GRAPHICS",
     KEYBOARD = "KEYBOARD",
-    MICE = "MICE",
-    AUDIO = "AUDIO",
-    CONTROLLER = "CONTROLLER",
-    GAMINGCHAIR = "GAMINGCHAIR"
+    MOUSE = "MOUSE",
+    CHAIR = "CHAIR"
 }
-registerEnumType(PeripheralCategory, { name: "PeripheralCategory" })
+registerEnumType(ProductCategory, {name:"ProductCategory"})
 
-export enum ProductCompany {
+
+export enum ProductBrand {
     MSI = "MSI",
     ASUS = "ASUS",
     APPLE = "APPLE",
     RAZER = "RAZER",
     LENOVO = "LENOVO"
 }
-registerEnumType(ProductCompany, { name: "ProductCompany" })
+registerEnumType(ProductBrand, { name: "ProductBrand" })
 
-export enum ProcessorType {
-    INTEL = "INTEL",
-    AMD = "AMD",
-    ARM = "ARM"
-}
-registerEnumType(ProcessorType, { name: "ProcessorType" })
 
-export enum ProcessorGen {
-    GEN_14 = "14TH GEN",
-    GEN_13 = "13TH GEN",
-    GEN_12 = "12TH GEN",
-    GEN_11 = "11TH GEN",
-    GEN_10 = "10TH GEN",
-    GEN_9 = "9TH GEN",
-    Ryzen_8000 = "Ryzen™ 8000",
-    Ryzen_7000 = "Ryzen™ 7000",
-}
-registerEnumType(ProcessorGen, { name: "ProcessorGen" })
-
-export enum CoreList {
-    INTEL_CORE_i9 = "INTEL CORE i9",
-    INTEL_CORE_i7 = "INTEL CORE i7",
-    INTEL_CORE_i5 = "INTEL CORE i5",
-    INTEL_CORE_i3 = "INTEL CORE i3",
-    RYZEN_9 = "RYZEN 9",
-    RYZEN_7 = "RYZEN 7",
-    RYZEN_5 = "RYZEN 5",
-    RYZEN_3 = "RYZEN 3",
-    M1 = "M1",
-    M2 = "M2",
-    M3 = "M3",
-    M1_PRO = "M1 PRO",
-    M2_PRO = "M2 PRO",
-    M3_PRO = "M3 PRO",
-    M1_MAX = "M1 MAX",
-    M2_MAX = "M2 MAX",
-    M3_MAX = "M3 MAX",
-}
-registerEnumType(CoreList, { name: "CoreList" })
 
 export enum ProductSeries {
     TITAN = "TITAN",
@@ -83,7 +39,8 @@ export enum ProductSeries {
     INFINITE = "INFINITE",
     TRIDENT = "TIDENT",
     CODEX = "CODEX",
-    META = "META"
+    META = "META",
+    
 }
 registerEnumType(ProductSeries, { name: "ProductSeries" })
 

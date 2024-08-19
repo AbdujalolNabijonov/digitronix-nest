@@ -5,7 +5,7 @@ import { Roles } from '../auth/decorators/auth.roles';
 import { MemberGroup } from '../../libs/types/member';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UseGuards } from '@nestjs/common';
-import { ProductComputerInquiry, ProductPCInput, ProductPeripheralInquiry, ProductPerpheralInput } from '../../libs/dto/product/product.input';
+import { ComputerInput, ComputerInquiry, ProductPeripheralInquiry, ProductPerpheralInput } from '../../libs/dto/product/product.input';
 import { AuthMember } from '../auth/decorators/auth.member';
 import { ObjectId } from 'mongoose';
 import { WithoutGuards } from '../auth/guards/without.guard';
@@ -19,19 +19,19 @@ export class ProductResolver {
         private readonly productService: ProductService
     ) { }
 
-    @Roles(MemberGroup.SELLER)
+    @Roles(MemberGroup.RETAILER)
     @UseGuards(RolesGuard)
     @Mutation(returns => Computer)
-    public async createPcProduct(
-        @Args("input") input: ProductPCInput,
+    public async createDevice(
+        @Args("input") input: ComputerInput,
         @AuthMember("_id") memberId: ObjectId
     ): Promise<Computer | Error> {
         console.log("Mutation: createPcProduct");
         input.memberId = memberId;
-        return await this.productService.createPcProduct(input)
+        return await this.productService.createDevice(input)
     }
 
-    @Roles(MemberGroup.SELLER)
+    @Roles(MemberGroup.RETAILER)
     @UseGuards(RolesGuard)
     @Mutation(returns => Peripheral)
     public async createPeripheral(
@@ -65,7 +65,7 @@ export class ProductResolver {
         return await this.productService.getProductPeripheral(targetId, memberId)
     }
 
-    @Roles(MemberGroup.SELLER)
+    @Roles(MemberGroup.RETAILER)
     @UseGuards(RolesGuard)
     @Mutation(() => Computer)
     public async updateProductPc(
@@ -78,7 +78,7 @@ export class ProductResolver {
         return await this.productService.updateProductPc(input)
     }
 
-    @Roles(MemberGroup.SELLER)
+    @Roles(MemberGroup.RETAILER)
     @UseGuards(RolesGuard)
     @Mutation(returns => Peripheral)
     public async updateProductPeripheral(
@@ -93,7 +93,7 @@ export class ProductResolver {
     @UseGuards(WithoutGuards)
     @Query(() => Computers)
     public async getAllProductPcs(
-        @Args("input") input: ProductComputerInquiry,
+        @Args("input") input: ComputerInquiry,
         @AuthMember("_id") memberId: ObjectId
     ): Promise<Computers> {
         console.log("Query:getAllProductPcs");
@@ -157,20 +157,20 @@ export class ProductResolver {
     @Roles(MemberGroup.ADMIN)
     @UseGuards(RolesGuard)
     @Query(() => Computers)
-    public async getAllProductPcsByAdmin(
-        @Args("input") input: ProductComputerInquiry
+    public async getAllComputersByAdmin(
+        @Args("input") input: ComputerInquiry
     ): Promise<Computers> {
-        console.log("Query: getAllProductPcsByAdmin");
-        return await this.productService.getAllProductPcsByAdmin(input)
+        console.log("Query: getAllComputersByAdmin");
+        return await this.productService.getAllComputersByAdmin(input)
     }
 
     @Roles(MemberGroup.ADMIN)
     @UseGuards(RolesGuard)
     @Query(() => Peripherals)
-    public async getAllProductPeripheralsByAdmin(
+    public async getAllPeripheralsByAdmin(
         @Args("input") input: ProductPeripheralInquiry
     ): Promise<Peripherals> {
         console.log("Query: getAllProductPeripheralsByAdmin");
-        return await this.productService.getAllProductPeripheralsByAdmin(input)
+        return await this.productService.getAllPeripheralsByAdmin(input)
     }
 }

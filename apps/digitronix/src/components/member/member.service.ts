@@ -26,7 +26,7 @@ export class MemberService {
         private readonly likeService: LikeService,
         private readonly viewService: ViewService
     ) { };
-    s
+    
     public async signup(input: MemberInput): Promise<Member | Error> {
         input["memberPassword"] = await this.authService.hashPassword(input.memberPassword);
         try {

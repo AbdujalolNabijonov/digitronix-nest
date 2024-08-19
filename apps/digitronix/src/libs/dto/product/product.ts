@@ -109,7 +109,7 @@ export class Computer {
     @Field(() => [MeLiked], { nullable: true })
     meLiked?: MeLiked[]
 
-    @Field(() => Member)
+    @Field(() => Member )
     memberData: Member
 
     @Field(() => Date, { nullable: true })

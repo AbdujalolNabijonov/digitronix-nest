@@ -8,7 +8,7 @@ import { MemberStatus } from "../../types/member";
 @InputType()
 export class MemberInput {
     @IsNotEmpty()
-    @Length(4, 20)
+    @Length(3, 20)
     @Field(() => String)
     memberNick: string
 

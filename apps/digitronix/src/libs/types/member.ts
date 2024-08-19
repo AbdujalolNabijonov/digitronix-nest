@@ -4,7 +4,7 @@ export enum MemberGroup {
     USER = "USER",
     ADMIN = "ADMIN",
     DELIVER = "DELIVER",
-    SELLER = "SELLER"
+    RETAILER = "RETAILER"
 }
 registerEnumType(MemberGroup, { name: "MemberGroup" })
 

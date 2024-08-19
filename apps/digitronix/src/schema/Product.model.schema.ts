@@ -1,16 +1,22 @@
 import { Schema } from "mongoose";
 import {
     Connectivity,
+    GraphicsSeries,
+    GraphicsType,
     MaterialType,
-    PeripheralCategory,
-    ProductStatus,
-    ProductType,
-    RgbType
+    ProductBrand,
+    ProductCategory,
+    ProductSeries,
+    ProductStatus
 } from "../libs/enums/product.enum";
 
-const peripheralSchema = new Schema({
+const productSchema = new Schema({
     memberId: {
         type: Schema.Types.ObjectId,
+        required: true
+    },
+    productName: {
+        type: String,
         required: true
     },
     productStatus: {
@@ -18,23 +24,55 @@ const peripheralSchema = new Schema({
         enum: ProductStatus,
         default: ProductStatus.ACTIVE
     },
+    productBrand: {
+        type: String,
+        enum: ProductBrand,
+        required: true
+    },
     productCategory: {
         type: String,
-        enum: PeripheralCategory,
+        enum: ProductCategory,
         required: true
     },
-    productType: {
-        type: String,
-        enum: ProductType,
-        required: true
-    },
-    productName: {
-        type: String,
+    productPrice: {
+        type: Number,
         required: true
     },
     productColor: {
         type: String,
         required: true
+    },
+    productCore: {
+        type: String
+    },
+    productCoreGen: {
+        type: Number
+    },
+    productSerie: {
+        type: String,
+        enum: ProductSeries,
+    },
+    productDisplay: {
+        type: Number
+    },
+    productMemory: {
+        type: Number,
+        required: true
+    },
+    productStorage: {
+        type: Number,
+        required: true
+    },
+    productWeight: {
+        type: Number,
+    },
+    productCardType: {
+        type: String,
+        enum: GraphicsType
+    },
+    productCardSerie: {
+        type: String,
+        enum: GraphicsSeries
     },
     productConnectivity: {
         type: String,
@@ -44,20 +82,12 @@ const peripheralSchema = new Schema({
         type: String,
         enum: MaterialType
     },
-    poductRgbType: {
-        type: String,
-        enum: RgbType
-    },
     productImages: {
         type: [String],
         required: true
     },
     productDesc: {
         type: [String]
-    },
-    productPrice: {
-        type: Number,
-        required: true
     },
     productViews: {
         type: Number,
@@ -81,8 +111,7 @@ const peripheralSchema = new Schema({
     deletedAt: {
         type: Date
     }
-}, { timestamps: true })
+})
 
-peripheralSchema.index({ productName: 1, productColor: 1, productConnectivity: 1 }, { unique: true })
-
-export default peripheralSchema
+productSchema.index({ productName: 1, productColor: 1, memberId: 1 }, { unique: true })
+export default productSchema

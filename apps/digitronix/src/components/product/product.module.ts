@@ -3,23 +3,21 @@ import { ProductResolver } from './product.resolver';
 import { ProductService } from './product.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from '../auth/auth.module';
-import computerSchema from '../../schema/Computer.model';
-import peripheralSchema from '../../schema/Peripheral.model';
 import { MemberModule } from '../member/member.module';
 import { LikeModule } from '../like/like.module';
 import { ViewModule } from '../view/view.module';
+import productSchema from '../../schema/Product.model';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: "Computer", schema: computerSchema }]),
-    MongooseModule.forFeature([{ name: "Peripheral", schema: peripheralSchema }]),
+    MongooseModule.forFeature([{ schema: productSchema, name: "Product" }]),
     AuthModule,
     MemberModule,
     LikeModule,
     ViewModule
   ],
   providers: [ProductResolver, ProductService],
-  exports:[
+  exports: [
     ProductService
   ]
 })

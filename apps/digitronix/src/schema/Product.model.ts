@@ -1,11 +1,11 @@
 import { Schema } from "mongoose";
 import {
     Connectivity,
-    GraphicsSeries,
     GraphicsType,
     MaterialType,
     ProductBrand,
     ProductCategory,
+    ProductLabel,
     ProductSeries,
     ProductStatus
 } from "../libs/enums/product.enum";
@@ -23,6 +23,10 @@ const productSchema = new Schema({
         type: String,
         enum: ProductStatus,
         default: ProductStatus.ACTIVE
+    },
+    productLabel: {
+        type: String,
+        enum: ProductLabel
     },
     productBrand: {
         type: String,
@@ -45,9 +49,6 @@ const productSchema = new Schema({
     productCore: {
         type: String
     },
-    productCoreGen: {
-        type: Number
-    },
     productSerie: {
         type: String,
         enum: ProductSeries,
@@ -57,22 +58,16 @@ const productSchema = new Schema({
     },
     productMemory: {
         type: Number,
-        required: true
     },
     productStorage: {
         type: Number,
-        required: true
     },
     productWeight: {
         type: Number,
     },
-    productCardType: {
+    productGraphics: {
         type: String,
         enum: GraphicsType
-    },
-    productCardSerie: {
-        type: String,
-        enum: GraphicsSeries
     },
     productConnectivity: {
         type: String,
@@ -111,7 +106,7 @@ const productSchema = new Schema({
     deletedAt: {
         type: Date
     }
-})
+}, { timestamps: true })
 
 productSchema.index({ productName: 1, productColor: 1, memberId: 1 }, { unique: true })
 export default productSchema

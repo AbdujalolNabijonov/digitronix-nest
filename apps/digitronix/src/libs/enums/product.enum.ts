@@ -7,15 +7,15 @@ export enum ProductStatus {
 }
 registerEnumType(ProductStatus, { name: "ProductStatus" })
 
-export enum ProductCategory{
-    LAPTOP="LAPTOP",
-    DESKTOP="DESKTOP",
-    GRAPHICS="GRAPHICS",
+export enum ProductCategory {
+    LAPTOP = "LAPTOP",
+    DESKTOP = "DESKTOP",
+    GRAPHICS = "GRAPHICS",
     KEYBOARD = "KEYBOARD",
     MOUSE = "MOUSE",
     CHAIR = "CHAIR"
 }
-registerEnumType(ProductCategory, {name:"ProductCategory"})
+registerEnumType(ProductCategory, { name: "ProductCategory" })
 
 
 export enum ProductBrand {
@@ -23,7 +23,8 @@ export enum ProductBrand {
     ASUS = "ASUS",
     APPLE = "APPLE",
     RAZER = "RAZER",
-    LENOVO = "LENOVO"
+    LENOVO = "LENOVO",
+    NVIDIA = "NVIDIA"
 }
 registerEnumType(ProductBrand, { name: "ProductBrand" })
 
@@ -40,18 +41,14 @@ export enum ProductSeries {
     TRIDENT = "TIDENT",
     CODEX = "CODEX",
     META = "META",
-    
+    SUPRIM = "SUPRIM",
+    GAMING = "GAMING",
+    VENTUS = "VENTUS",
+    SHADOW = "SHADOW"
+
 }
 registerEnumType(ProductSeries, { name: "ProductSeries" })
 
-export enum GraphicsSeries {
-    GeForce_RTX_40 = "GeForce RTX™ 40",
-    GeForce_RTX_30 = "GeForce RTX™ 30",
-    GeForce_RTX_20 = "GeForce RTX™ 20",
-    GeForce_GTX_16 = "GeForce® GTX 16",
-    AMD_Radeon_6000M = "AMD Radeon™ 6000M"
-}
-registerEnumType(GraphicsSeries, { name: "GraphicsSeries" })
 
 export enum GraphicsType {
     GeForce_RTX_4090 = "GeForce RTX™ 4090",
@@ -75,14 +72,6 @@ export enum GraphicsType {
 }
 registerEnumType(GraphicsType, { name: "GraphicsType" })
 
-export enum RgbType {
-    Per_Key_RGB_Mystic_Light = "Per-Key RGB Mystic Light",
-    Single_Color_Backlight = "Single-Color Backlight",
-    Rainbow_RGB = "Rainbow RGB",
-    RGB = "RGB"
-}
-
-registerEnumType(RgbType, { name: "RgbType" })
 
 export enum Connectivity {
     WIRE = "WIRE",
@@ -97,3 +86,9 @@ export enum MaterialType {
     MESH = "MESH"
 }
 registerEnumType(MaterialType, { name: "MaterialType" })
+
+export enum ProductLabel {
+    NEW = "NEW",
+    HOT = "HOT"
+}
+registerEnumType(ProductLabel, { name: "ProductLabel" })

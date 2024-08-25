@@ -2,64 +2,52 @@ import { Field, ObjectType } from "@nestjs/graphql";
 import { ObjectId } from "mongoose";
 import {
     Connectivity,
-    CoreList,
-    GraphicsSeries,
     GraphicsType,
     MaterialType,
-    ProcessorGen,
-    ProcessorType,
-    ProductCompany,
+    ProductBrand,
+    ProductCategory,
+    ProductLabel,
     ProductSeries,
-    ProductStatus,
-    ProductType,
-    RgbType
+    ProductStatus
 } from "../../enums/product.enum";
-import { MeLiked } from "../like/like";
 import { Member } from "../member/member";
+import { MeLiked } from "../like/like";
 
 @ObjectType()
-export class Computer {
-    @Field(() => String)
-    _id: ObjectId;
+export class Product {
 
     @Field(() => String)
-    memberId: ObjectId
+    memberId: ObjectId;
 
     @Field(() => String)
-    productName: string
-
-    @Field(() => ProductCompany)
-    productCompany: ProductCompany
+    productName: string;
 
     @Field(() => ProductStatus)
     productStatus: ProductStatus
 
-    @Field(() => ProductType)
-    productType: ProductType
+    @Field(() => String, { nullable: true })
+    productLabel?: ProductLabel
 
-    @Field(() => ProductSeries)
-    productSerie: ProductSeries
+    @Field(() => ProductBrand)
+    productBrand: ProductBrand
 
-    @Field(() => ProcessorType, { nullable: true })
-    productProcessor?: ProcessorType
+    @Field(() => ProductCategory)
+    productCategory: ProductCategory
 
-    @Field(() => ProcessorGen, { nullable: true })
-    productPocessorGen?: ProcessorGen
-
-    @Field(() => GraphicsSeries, { nullable: true })
-    productGraphicsSerie?: GraphicsSeries
-
-    @Field(() => GraphicsType, { nullable: true })
-    productGraphicsType?: GraphicsType
-
-    @Field(() => Number, { nullable: true })
-    productDisplay?: number
+    @Field(() => Number)
+    productPrice: number
 
     @Field(() => String)
     productColor: string
 
-    @Field(() => CoreList, { nullable: true })
-    productCore?: CoreList
+    @Field(() => String, { nullable: true })
+    productCore?: string
+
+    @Field(() => ProductSeries, { nullable: true })
+    productSerie?: ProductSeries
+
+    @Field(() => Number, { nullable: true })
+    productDisplay?: number
 
     @Field(() => Number, { nullable: true })
     productMemory?: number
@@ -67,101 +55,23 @@ export class Computer {
     @Field(() => Number, { nullable: true })
     productStorage?: number
 
-    @Field(() => String, { nullable: true })
-    poductBattery?: string
-
-    @Field(() => RgbType, { nullable: true })
-    poductRgbType?: RgbType
-
-    @Field(() => String, { nullable: true })
-    productWebCam?: string
-
     @Field(() => Number, { nullable: true })
     productWeight?: number
 
-    @Field(() => [String])
-    productImages: string[]
-
-    @Field(() => [String], { nullable: true })
-    productDesc?: string
-
-    @Field(() => Number)
-    productPrice: number
-
-    @Field(() => RgbType, { nullable: true })
-    productRgbType?: RgbType
+    @Field(() => GraphicsType, { nullable: true })
+    productGraphics?: GraphicsType;
 
     @Field(() => Connectivity, { nullable: true })
     productConnectivity?: Connectivity
 
-    @Field(() => Number)
-    productLikes: number
-
-    @Field(() => Number)
-    productViews: number
-
-    @Field(() => Number)
-    productComments: number
-
-    @Field(() => Number)
-    productRank: number
-
-    @Field(() => [MeLiked], { nullable: true })
-    meLiked?: MeLiked[]
-
-    @Field(() => Member )
-    memberData: Member
-
-    @Field(() => Date, { nullable: true })
-    soldAt?: Date
-
-    @Field(() => Date, { nullable: true })
-    deletedAt?: Date
-
-    @Field(() => Date)
-    createdAt: Date
-
-    @Field(() => Date)
-    updatedAt: Date
-}
-
-@ObjectType()
-export class Peripheral {
-    @Field(() => String)
-    _id: ObjectId;
-
-    @Field(() => String)
-    memberId: ObjectId
-
-    @Field(() => ProductStatus)
-    productStatus: ProductStatus
-
-    @Field(() => ProductType)
-    productType: ProductType
-
-    @Field(() => String)
-    productName: string
-
-    @Field(() => String)
-    productColor: string
-
-    @Field(() => Connectivity)
-    productConnectivity: Connectivity
-
     @Field(() => MaterialType, { nullable: true })
     productMaterial?: MaterialType
 
-    @Field(() => RgbType, { nullable: true })
-    poductRgbType?: RgbType
-
     @Field(() => [String])
-    productImages: string[]
+    productImages: String[]
 
-    @Field(() => [String])
-    productDesc: string[]
-
-    @Field(() => Number)
-    productPrice: number
+    @Field(() => [String], { nullable: true })
+    productDesc?: string[];
 
     @Field(() => Number)
     productViews: number
@@ -174,13 +84,13 @@ export class Peripheral {
 
     @Field(() => Number)
     productRank: number
-
-    @Field(() => [MeLiked], { nullable: true })
-    meLiked?: MeLiked[]
 
     @Field(() => Member, { nullable: true })
     memberData?: Member
 
+    @Field(() => [MeLiked], { nullable: true })
+    meLiked?: MeLiked[]
+
     @Field(() => Date, { nullable: true })
     soldAt?: Date
 
@@ -195,25 +105,16 @@ export class Peripheral {
 }
 
 @ObjectType()
-class Total {
+export class GetAllProducts {
+    @Field(() => [Product])
+    list: Product[]
+
+    @Field(() => [MetaCounter])
+    metaCounter: MetaCounter[]
+}
+
+@ObjectType()
+class MetaCounter {
     @Field(() => Number, { nullable: true })
     total?: number
-}
-
-@ObjectType()
-export class Computers {
-    @Field(() => [Computer])
-    list: Computer[]
-
-    @Field(() => [Total])
-    metaCounter: Total[]
-}
-
-@ObjectType()
-export class Peripherals {
-    @Field(() => [Peripheral])
-    list: Peripheral[]
-
-    @Field(() => [Total])
-    metaCounter: Total
 }

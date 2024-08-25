@@ -26,7 +26,7 @@ export class MemberService {
         private readonly likeService: LikeService,
         private readonly viewService: ViewService
     ) { };
-    
+
     public async signup(input: MemberInput): Promise<Member | Error> {
         input["memberPassword"] = await this.authService.hashPassword(input.memberPassword);
         try {
@@ -194,7 +194,7 @@ export class MemberService {
     }
     public async memberStatsEdit(memberId: ObjectId, modifier: number, dataset: string): Promise<Member> {
         const member = await this.memberModel
-            .findOneAndUpdate(
+            .findByIdAndUpdate(
                 { _id: memberId },
                 { $inc: { [dataset]: modifier } },
                 { returnDocument: "after" })

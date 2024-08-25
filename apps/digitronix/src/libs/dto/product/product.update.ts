@@ -1,66 +1,69 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { IsIn, IsNotEmpty, IsOptional, Length } from "class-validator";
-import { Connectivity, CoreList, GraphicsSeries, GraphicsType, PeripheralCategory, ProcessorGen, ProcessorType, ProductCompany, ProductSeries, ProductStatus, ProductType, RgbType } from "../../enums/product.enum";
+import { IsNotEmpty, IsOptional, IsPort, Length } from "class-validator";
 import { ObjectId } from "mongoose";
-import { Direction } from "../../enums/common.enum";
-import { avaibleProductSorts } from "../../types/config";
+import {
+    Connectivity,
+    GraphicsType,
+    MaterialType,
+    ProductBrand,
+    ProductCategory,
+    ProductLabel,
+    ProductSeries,
+    ProductStatus
+} from "../../enums/product.enum";
 
 @InputType()
-export class UpdateProductPc {
-    memberId?: ObjectId
+export class UpdateProduct {
+    memberId?: ObjectId;
 
     @IsNotEmpty()
     @Field(() => String)
-    _id: string
+    _id: ObjectId
 
     @IsOptional()
-    @Length(5, 25)
+    @Length(5, 30)
     @Field(() => String, { nullable: true })
-    productName?: string
+    productName?: string;
 
     @IsOptional()
     @Field(() => ProductStatus, { nullable: true })
     productStatus?: ProductStatus
 
     @IsOptional()
-    @Field(() => ProductCompany, { nullable: true })
-    productCompany?: ProductCompany
+    @Field(() => ProductLabel, { nullable: true })
+    productLabel?: ProductLabel
 
     @IsOptional()
-    @Field(() => ProductType, { nullable: true })
-    productType?: ProductType
+    @Field(() => ProductBrand, { nullable: true })
+    productBrand?: ProductBrand
 
     @IsOptional()
-    @Field(() => ProductSeries, { nullable: true })
-    productSerie?: ProductSeries
-
-    @IsOptional()
-    @Field(() => ProcessorType, { nullable: true })
-    productProcessor?: ProcessorType
-
-    @IsOptional()
-    @Field(() => ProcessorGen, { nullable: true })
-    productProcessorGen?: ProcessorGen;
-
-    @IsOptional()
-    @Field(() => GraphicsSeries, { nullable: true })
-    productGraphicsSerie?: GraphicsSeries
-
-    @IsOptional()
-    @Field(() => GraphicsType, { nullable: true })
-    productGraphicsType?: GraphicsType
+    @Field(() => ProductCategory, { nullable: true })
+    productCategory?: ProductCategory
 
     @IsOptional()
     @Field(() => Number, { nullable: true })
-    productDisplay?: number
+    productPrice?: number
 
     @IsOptional()
     @Field(() => String, { nullable: true })
     productColor?: string
 
     @IsOptional()
-    @Field(() => CoreList, { nullable: true })
-    productCore?: CoreList
+    @Field(() => String, { nullable: true })
+    productCore?: string
+
+    @IsOptional()
+    @Field(() => String, { nullable: true })
+    productCoreGen?: string
+
+    @IsOptional()
+    @Field(() => ProductSeries, { nullable: true })
+    productSerie?: ProductSeries
+
+    @IsOptional()
+    @Field(() => Number, { nullable: true })
+    productDisplay?: number
 
     @IsOptional()
     @Field(() => Number, { nullable: true })
@@ -71,90 +74,29 @@ export class UpdateProductPc {
     productStorage?: number
 
     @IsOptional()
-    @Field(() => String, { nullable: true })
-    poductBattery?: string
-
-    @IsOptional()
-    @Field(() => RgbType, { nullable: true })
-    poductRgbType?: RgbType
-
-    @IsOptional()
-    @Field(() => String, { nullable: true })
-    productWebCam?: string
-
-    @IsOptional()
     @Field(() => Number, { nullable: true })
     productWeight?: number
 
     @IsOptional()
-    @Field(() => [String], { nullable: true })
-    productImages: string[]
-
-    @IsOptional()
-    @Field(() => [String], { nullable: true })
-    productDesc?: string
-
-    @IsOptional()
-    @Field(() => Number, { nullable: true })
-    productPrice: number
-
-    soldAt?: Date
-    deletedAt?: Date
-
-}
-
-@InputType()
-export class UpdateProductPeripheral {
-    memberId?: ObjectId
-
-    @IsNotEmpty()
-    @Field(() => String)
-    _id: string
-
-    @IsOptional()
-    @Length(5, 25)
-    @Field(() => String, { nullable: true })
-    productName?: string;
-
-    @IsOptional()
-    @Field(() => ProductStatus, { nullable: true })
-    productStatus?: ProductStatus
-
-    @IsOptional()
-    @Field(() => PeripheralCategory, { nullable: true })
-    productCategory: PeripheralCategory
-
-    @IsOptional()
-    @Field(() => ProductType, { nullable: true })
-    productType?: ProductType
-
-    @IsOptional()
-    @Field(() => ProductSeries, { nullable: true })
-    productSerie?: ProductSeries
-
-    @IsOptional()
-    @Field(() => String, { nullable: true })
-    productColor?: string
-
-    @IsOptional()
-    @Field(() => [String], { nullable: true })
-    productDesc?: string[]
-
-    @IsOptional()
-    @Field(() => RgbType, { nullable: true })
-    productRgbType?: RgbType
+    @Field(() => GraphicsType, { nullable: true })
+    productGraphics?: GraphicsType;
 
     @IsOptional()
     @Field(() => Connectivity, { nullable: true })
     productConnectivity?: Connectivity
 
     @IsOptional()
-    @Field(() => Number, { nullable: true })
-    productPrice?: number
+    @Field(() => MaterialType, { nullable: true })
+    productMaterial?: MaterialType
 
-    @Field(() => Date, { nullable: true })
+    @IsOptional()
+    @Field(() => [String], { nullable: true })
+    productImages?: String[]
+
+    @IsOptional()
+    @Field(() => [String], { nullable: true })
+    productDesc?: String[];
+
     soldAt?: Date
-
-    @Field(() => Date, { nullable: true })
     deletedAt?: Date
 }

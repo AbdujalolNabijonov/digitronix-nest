@@ -1,17 +1,17 @@
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { ProductService } from './product.service';
-import { Computer, Computers, Peripheral, Peripherals } from '../../libs/dto/product/product';
 import { Roles } from '../auth/decorators/auth.roles';
 import { MemberGroup } from '../../libs/types/member';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UseGuards } from '@nestjs/common';
-import { ComputerInput, ComputerInquiry, ProductPeripheralInquiry, ProductPerpheralInput } from '../../libs/dto/product/product.input';
 import { AuthMember } from '../auth/decorators/auth.member';
 import { ObjectId } from 'mongoose';
 import { WithoutGuards } from '../auth/guards/without.guard';
 import { shapeIntoMongoObjectId } from '../../libs/types/config';
-import { UpdateProductPc, UpdateProductPeripheral } from '../../libs/dto/product/product.update';
+import { UpdateProduct} from '../../libs/dto/product/product.update';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { ProductInput, ProductInquiry } from '../../libs/dto/product/product.input';
+import { GetAllProducts, Product } from '../../libs/dto/product/product';
 
 @Resolver()
 export class ProductResolver {
@@ -21,156 +21,86 @@ export class ProductResolver {
 
     @Roles(MemberGroup.RETAILER)
     @UseGuards(RolesGuard)
-    @Mutation(returns => Computer)
-    public async createDevice(
-        @Args("input") input: ComputerInput,
+    @Mutation(returns => Product)
+    public async createProduct(
+        @Args("input") input: ProductInput,
         @AuthMember("_id") memberId: ObjectId
-    ): Promise<Computer | Error> {
-        console.log("Mutation: createPcProduct");
+    ): Promise<Product> {
+        console.log("Mutation: createProduct");
         input.memberId = memberId;
-        return await this.productService.createDevice(input)
+        return await this.productService.createProduct(input)
     }
+
+
+    @UseGuards(WithoutGuards)
+    @Query(() => Product)
+    public async getProduct(
+        @Args("input") input: String,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Product> {
+        console.log("Query: getProduct");
+        const targetId = shapeIntoMongoObjectId(input)
+        return await this.productService.getProduct(targetId, memberId)
+    }
+
 
     @Roles(MemberGroup.RETAILER)
     @UseGuards(RolesGuard)
-    @Mutation(returns => Peripheral)
-    public async createPeripheral(
-        @Args("input") input: ProductPerpheralInput,
+    @Mutation(() => Product)
+    public async updateProduct(
+        @Args("input") input: UpdateProduct,
         @AuthMember("_id") memberId: ObjectId
-    ): Promise<Peripheral | Error> {
-        console.log("Mutation: createPeripheral")
-        input.memberId = memberId
-        return await this.productService.createPeripheral(input)
-    }
-
-    @UseGuards(WithoutGuards)
-    @Query(() => Computer)
-    public async getProductPc(
-        @Args("input") input: String,
-        @AuthMember("_id") memberId: ObjectId
-    ): Promise<Computer> {
-        console.log("Query: getProductPc");
-        const targetId = shapeIntoMongoObjectId(input)
-        return await this.productService.getProductPc(targetId, memberId)
-    }
-
-    @UseGuards(WithoutGuards)
-    @Query(returns => Peripheral)
-    public async getProductPeripheral(
-        @Args("input") input: String,
-        @AuthMember("_id") memberId: ObjectId
-    ): Promise<Peripheral> {
-        console.log("Query: getProductPeripheral");
-        const targetId = shapeIntoMongoObjectId(input)
-        return await this.productService.getProductPeripheral(targetId, memberId)
-    }
-
-    @Roles(MemberGroup.RETAILER)
-    @UseGuards(RolesGuard)
-    @Mutation(() => Computer)
-    public async updateProductPc(
-        @Args("input") input: UpdateProductPc,
-        @AuthMember("_id") memberId: ObjectId
-    ): Promise<Computer> {
-        console.log("Mutation: updateProductPc");
+    ): Promise<Product> {
+        console.log("Mutation: updateProduct");
         input.memberId = memberId;
         input._id = shapeIntoMongoObjectId(input._id)
-        return await this.productService.updateProductPc(input)
+        return await this.productService.updateProduct(input)
     }
 
-    @Roles(MemberGroup.RETAILER)
-    @UseGuards(RolesGuard)
-    @Mutation(returns => Peripheral)
-    public async updateProductPeripheral(
-        @Args("input") input: UpdateProductPeripheral,
-        @AuthMember("_id") memberId: ObjectId
-    ): Promise<Peripheral> {
-        console.log("Mutation: updateProductPeripheral");
-        input._id = shapeIntoMongoObjectId(input._id);
-        return await this.productService.updateProductPeripheral(input)
-    }
 
     @UseGuards(WithoutGuards)
-    @Query(() => Computers)
-    public async getAllProductPcs(
-        @Args("input") input: ComputerInquiry,
+    @Query(() => GetAllProducts)
+    public async getAllProducts(
+        @Args("input") input: ProductInquiry,
         @AuthMember("_id") memberId: ObjectId
-    ): Promise<Computers> {
-        console.log("Query:getAllProductPcs");
-        return await this.productService.getAllProductPcs(input, memberId)
+    ): Promise<GetAllProducts> {
+        console.log("Query: getAllProducts");
+        return await this.productService.getAllProducts(input, memberId)
     }
 
-    @UseGuards(WithoutGuards)
-    @Query(() => Peripherals)
-    public async getAllProductPeripherals(
-        @Args("input") input: ProductPeripheralInquiry,
-        @AuthMember("_id") memberId: ObjectId
-    ): Promise<Peripherals> {
-        console.log("Query:getAllProductPeripherals");
-        return await this.productService.getAllProductPeripherals(input, memberId)
-    }
 
     @UseGuards(AuthGuard)
-    @Mutation(() => Computer)
-    public async likeTargetPc(
+    @Mutation(() => Product)
+    public async likeTargetProduct(
         @Args("input") input: string,
         @AuthMember("_id") memberId: ObjectId
-    ): Promise<Computer> {
-        console.log("Mutation: likeTargetPc");
+    ): Promise<Product> {
+        console.log("Mutation: likeTargetProduct");
         const targetLikeId = shapeIntoMongoObjectId(input)
-        return await this.productService.likeTargetPc(targetLikeId, memberId)
+        return await this.productService.likeTargetProduct(targetLikeId, memberId)
     }
 
-    @UseGuards(AuthGuard)
-    @Mutation(() => Peripheral)
-    public async likeTargetPeripheral(
-        @Args("input") input: String,
-        @AuthMember("_id") memberId: ObjectId
-    ): Promise<Peripheral> {
-        console.log("Mutation: likeTargetPeripheral")
-        const targetLikeId = shapeIntoMongoObjectId(input);
-        return await this.productService.likeTargetPeripheral(targetLikeId, memberId)
-    }
 
     //ADMIN
     @Roles(MemberGroup.ADMIN)
     @UseGuards(RolesGuard)
-    @Mutation(() => Computer)
-    public async updateProductPcByAdmin(
-        @Args("input") input: UpdateProductPc,
+    @Mutation(() =>Product)
+    public async updateProductByAdmin(
+        @Args("input") input: UpdateProduct,
         @AuthMember("_id") memberId: ObjectId
-    ): Promise<Computer> {
-        console.log("Mutation: updateProductPcByAdmin");
-        return await this.productService.updateProductPcByAdmin(input, memberId)
+    ): Promise<Product> {
+        console.log("Mutation: updateProductByAdmin");
+        return await this.productService.updateProductByAdmin(input, memberId)
     }
+
 
     @Roles(MemberGroup.ADMIN)
     @UseGuards(RolesGuard)
-    @Mutation(() => Peripheral)
-    public async updateProductPeripheralByAdmin(
-        @Args("input") input: UpdateProductPeripheral
-    ): Promise<Peripheral> {
-        console.log("Mutation: updateProductPeripheralByAdmin")
-        return await this.productService.updateProductPeripheralByAdmin(input)
-    }
-
-    @Roles(MemberGroup.ADMIN)
-    @UseGuards(RolesGuard)
-    @Query(() => Computers)
-    public async getAllComputersByAdmin(
-        @Args("input") input: ComputerInquiry
-    ): Promise<Computers> {
-        console.log("Query: getAllComputersByAdmin");
-        return await this.productService.getAllComputersByAdmin(input)
-    }
-
-    @Roles(MemberGroup.ADMIN)
-    @UseGuards(RolesGuard)
-    @Query(() => Peripherals)
-    public async getAllPeripheralsByAdmin(
-        @Args("input") input: ProductPeripheralInquiry
-    ): Promise<Peripherals> {
-        console.log("Query: getAllProductPeripheralsByAdmin");
-        return await this.productService.getAllPeripheralsByAdmin(input)
+    @Query(() => GetAllProducts)
+    public async getAllProductsByAdmin(
+        @Args("input") input: ProductInquiry
+    ): Promise<GetAllProducts> {
+        console.log("Query: getAllProductsByAdmin");
+        return await this.productService.getAllProductsByAdmin(input)
     }
 }

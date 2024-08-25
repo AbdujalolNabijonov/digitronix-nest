@@ -11,6 +11,9 @@ export enum CommentGroup {
     ARTICLE = 'ARTICLE',
     LAPTOP = "LAPTOP",
     DESKTOP = "DESKTOP",
-    PERIPHERAL = "PERIPHERAL"
+    GRAPHICS = "GRAPHICS",
+    KEYBOARD = "KEYBOARD",
+    MOUSE = "MOUSE",
+    CHAIR = "CHAIR"
 }
 registerEnumType(CommentGroup, { name: "CommentGroup" })

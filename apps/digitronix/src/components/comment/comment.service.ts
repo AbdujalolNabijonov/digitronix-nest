@@ -7,7 +7,6 @@ import { CommentGroup, CommentStatus } from '../../libs/enums/comment.enum';
 import { ArticleService } from '../article/article.service';
 import { MemberService } from '../member/member.service';
 import { ProductService } from '../product/product.service';
-import { ProductType } from '../../libs/enums/product.enum';
 import { UpdateComment } from '../../libs/dto/comment/comment.update';
 import { Comment, Comments } from '../../libs/dto/comment/comment';
 import * as moment from 'moment';
@@ -116,16 +115,25 @@ export class CommentService {
                 await this.articleService.articleStatsEditor(commentTargetId, modifier, "artileComments");
                 break;
             case CommentGroup.DESKTOP:
-                await this.productSevice.productStatsEdit(commentTargetId, modifier, "productComments", ProductType.DESKTOP);
+                await this.productSevice.productStatsEdit(commentTargetId, modifier, "productComments");
                 break;
             case CommentGroup.LAPTOP:
-                await this.productSevice.productStatsEdit(commentTargetId, modifier, "productComments", ProductType.LAPTOP);
+                await this.productSevice.productStatsEdit(commentTargetId, modifier, "productComments");
                 break;
             case CommentGroup.MEMBER:
                 await this.memberService.memberStatsEdit(commentTargetId, modifier, "memberComments");
                 break;
-            case CommentGroup.PERIPHERAL:
-                await this.productSevice.productStatsEdit(commentTargetId, modifier, "productComments", ProductType.PERIPHERAL);
+            case CommentGroup.CHAIR:
+                await this.productSevice.productStatsEdit(commentTargetId, modifier, "productComments");
+                break;
+            case CommentGroup.GRAPHICS:
+                await this.productSevice.productStatsEdit(commentTargetId, modifier, "productComments");
+                break;
+            case CommentGroup.KEYBOARD:
+                await this.productSevice.productStatsEdit(commentTargetId, modifier, "productComments");
+                break;
+            case CommentGroup.MOUSE:
+                await this.productSevice.productStatsEdit(commentTargetId, modifier, "productComments");
                 break;
             default:
                 break;

@@ -13,7 +13,7 @@ import { ProductStatus } from '../../libs/enums/product.enum';
 import { UpdateProduct } from '../../libs/dto/product/product.update';
 import { T } from '../../libs/types/general';
 import { Direction } from '../../libs/enums/common.enum';
-import { lookupAuthMemberLiked, lookUpMember } from '../../libs/types/config';
+import { lookupAuthMemberLiked, lookUpMember, shapeIntoMongoObjectId } from '../../libs/types/config';
 import * as moment from "moment"
 import { ProductInput, ProductInquiry } from '../../libs/dto/product/product.input';
 import { GetAllProducts, Product } from '../../libs/dto/product/product';
@@ -81,7 +81,7 @@ export class ProductService {
         if (!existance) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
         if (productStatus === ProductStatus.SOLD) soldAt = moment().toDate();
-        else if (productStatus === ProductStatus.DELETED) deletedAt = moment().toDate()
+        else if (productStatus === ProductStatus.DELETE) deletedAt = moment().toDate()
 
         const result = await this.productModel
             .findByIdAndUpdate(
@@ -157,7 +157,7 @@ export class ProductService {
             likeTargetId: targetLikeId,
             likeGroup: exist.productCategory
         }
-        
+
         const modifier = await this.likeService.likeTargetToggle(likeInput);
 
         const result = await this.productStatsEdit(targetLikeId, modifier, "productLikes")
@@ -169,6 +169,7 @@ export class ProductService {
     //ADMIN
     public async updateProductByAdmin(input: UpdateProduct, memberId: ObjectId): Promise<Product> {
         let { productStatus, soldAt, deletedAt } = input
+        input._id = shapeIntoMongoObjectId(input._id)
         const search = {
             _id: input._id,
             productStatus: ProductStatus.ACTIVE
@@ -177,7 +178,7 @@ export class ProductService {
         if (!existance) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
         if (productStatus === ProductStatus.SOLD) soldAt = moment().toDate();
-        else if (productStatus === ProductStatus.DELETED) deletedAt = moment().toDate();
+        else if (productStatus === ProductStatus.DELETE) deletedAt = moment().toDate();
 
         delete input._id
         const result = await this.productModel.findOneAndUpdate(search, input, { returnDocument: "after" }).exec();
@@ -185,7 +186,7 @@ export class ProductService {
 
         if (soldAt || deletedAt) {
             await this.memberService.memberStatsEdit(
-                input.memberId,
+                existance.memberId,
                 -1,
                 "memberProducts"
             )

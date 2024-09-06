@@ -214,7 +214,7 @@ export class ArticleService {
         return result[0]
     }
 
-    public async removeArticelByAdmin(targetArticleId): Promise<Article> {
+    public async removeArticelByAdmin(targetArticleId:string): Promise<Article> {
 
         const search: T = {
             _id: targetArticleId,

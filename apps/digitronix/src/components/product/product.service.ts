@@ -41,23 +41,16 @@ export class ProductService {
     }
 
     public async getProduct(targetId: ObjectId, memberId: ObjectId): Promise<Product> {
-        let result = await this.productModel.findById(targetId).exec();
-        if (!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        let exist = await this.productModel.findById(targetId).exec();
+        if (!exist) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        const product = await this.productModel.aggregate([
+            {$match: {_id: targetId}},
+            lookupAuthMemberLiked(memberId),
+            lookUpMember,
+            {$unwind: "$memberData"}
+        ])
         if (memberId) {
-            //like
-            const likeInput: LikeInput = {
-                memberId,
-                likeTargetId: targetId,
-                likeGroup: LikeGroup.COMPUTER
-            }
-            const existanceLike = await this.likeService.checkExistence(likeInput)
-            if (existanceLike) {
-                result[0].meLiked = {
-                    memberId,
-                    likeTargetId: targetId,
-                    myFavorite: true
-                }
-            }
             //view
             const viewInput: ViewInput = {
                 memberId,
@@ -67,10 +60,10 @@ export class ProductService {
             const existanceView = await this.viewService.recordView(viewInput);
             if (existanceView) {
                 await this.productStatsEdit(targetId, 1, "productViews")
-                result.productViews++
+                exist.productViews++
             }
         }
-        return result
+        return product[0]
     }
 
 

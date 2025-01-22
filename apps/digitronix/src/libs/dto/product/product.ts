@@ -2,7 +2,6 @@ import { Field, ObjectType } from "@nestjs/graphql";
 import { ObjectId } from "mongoose";
 import {
     Connectivity,
-    GraphicsType,
     MaterialType,
     ProductBrand,
     ProductCategory,
@@ -40,8 +39,8 @@ export class Product {
     @Field(() => Number)
     productPrice: number
 
-    @Field(() => String)
-    productColor: string
+    @Field(() => String, { nullable: true })
+    productColor?: string
 
     @Field(() => String, { nullable: true })
     productCore?: string
@@ -52,6 +51,9 @@ export class Product {
     @Field(() => Number, { nullable: true })
     productDisplay?: number
 
+    @Field(() => String, { nullable: true })
+    productOS?: string
+
     @Field(() => Number, { nullable: true })
     productMemory?: number
 
@@ -61,8 +63,8 @@ export class Product {
     @Field(() => Number, { nullable: true })
     productWeight?: number
 
-    @Field(() => GraphicsType, { nullable: true })
-    productGraphics?: GraphicsType;
+    @Field(() => String, { nullable: true })
+    productGraphics?: string;
 
     @Field(() => Connectivity, { nullable: true })
     productConnectivity?: Connectivity

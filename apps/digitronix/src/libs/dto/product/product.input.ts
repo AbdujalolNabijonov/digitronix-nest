@@ -2,7 +2,6 @@ import { Field, InputType, Int } from "@nestjs/graphql";
 import { IsIn, isNotEmpty, IsNotEmpty, IsOptional, Length } from "class-validator";
 import {
     Connectivity,
-    GraphicsType,
     MaterialType,
     ProductCategory,
     ProductBrand,
@@ -42,8 +41,8 @@ export class ProductInput {
     @Field(() => Number)
     productPrice: number
 
-    @IsNotEmpty()
-    @Field(() => String)
+    @IsOptional()
+    @Field(() => String, {nullable:true})
     productColor: String
 
     @IsOptional()
@@ -53,6 +52,10 @@ export class ProductInput {
     @IsOptional()
     @Field(() => ProductSeries, { nullable: true })
     productSerie?: ProductSeries
+
+    @IsOptional()
+    @Field(()=>String, {nullable:true})
+    productOS?: string
 
     @IsOptional()
     @Field(() => Number, { nullable: true })
@@ -71,8 +74,8 @@ export class ProductInput {
     productWeight?: number
 
     @IsOptional()
-    @Field(() => GraphicsType, { nullable: true })
-    productGraphics?: GraphicsType;
+    @Field(() => String, { nullable: true })
+    productGraphics?: string;
 
     @IsOptional()
     @Field(() => Connectivity, { nullable: true })
@@ -140,8 +143,8 @@ class PISearch {
     memoryList?: number[]
 
     @IsOptional()
-    @Field(() => [GraphicsType], { nullable: true })
-    graphicsList?: GraphicsType[]
+    @Field(() => [String], { nullable: true })
+    graphicsList?: string[]
 
     @IsOptional()
     @Field(() => [Connectivity], { nullable: true })

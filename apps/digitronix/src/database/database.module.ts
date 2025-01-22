@@ -13,7 +13,7 @@ import { InjectConnection, MongooseModule } from "@nestjs/mongoose"
 })
 export class DatabaseModule {
   private readonly logger: Logger = new Logger("MongoDB Connection")
-  constructor(@InjectConnection() private readonly connection: Connection) {
+  constructor(@InjectConnection() readonly connection: Connection) {
     if (connection.readyState === 1) {
       this.logger.log(`MongoDB connected into ${process.env.NODE_ENV === "poduction" ? "production db" : "development db"}`)
     } else {

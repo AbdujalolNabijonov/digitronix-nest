@@ -1,7 +1,6 @@
 import { Schema } from "mongoose";
 import {
     Connectivity,
-    GraphicsType,
     MaterialType,
     ProductBrand,
     ProductCategory,
@@ -43,8 +42,7 @@ const productSchema = new Schema({
         required: true
     },
     productColor: {
-        type: String,
-        required: true
+        type: String
     },
     productCore: {
         type: String
@@ -56,6 +54,9 @@ const productSchema = new Schema({
     productDisplay: {
         type: Number
     },
+    productOS:{
+        type:String
+    },
     productMemory: {
         type: Number,
     },
@@ -66,8 +67,7 @@ const productSchema = new Schema({
         type: Number,
     },
     productGraphics: {
-        type: String,
-        enum: GraphicsType
+        type: String
     },
     productConnectivity: {
         type: String,

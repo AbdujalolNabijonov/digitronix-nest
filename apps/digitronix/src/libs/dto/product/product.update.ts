@@ -3,7 +3,6 @@ import { IsNotEmpty, IsOptional, IsPort, Length } from "class-validator";
 import { ObjectId } from "mongoose";
 import {
     Connectivity,
-    GraphicsType,
     MaterialType,
     ProductBrand,
     ProductCategory,
@@ -78,8 +77,8 @@ export class UpdateProduct {
     productWeight?: number
 
     @IsOptional()
-    @Field(() => GraphicsType, { nullable: true })
-    productGraphics?: GraphicsType;
+    @Field(() =>String, { nullable: true })
+    productGraphics?: string;
 
     @IsOptional()
     @Field(() => Connectivity, { nullable: true })

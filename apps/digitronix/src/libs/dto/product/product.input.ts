@@ -42,7 +42,7 @@ export class ProductInput {
     productPrice: number
 
     @IsOptional()
-    @Field(() => String, {nullable:true})
+    @Field(() => String, { nullable: true })
     productColor: String
 
     @IsOptional()
@@ -54,7 +54,7 @@ export class ProductInput {
     productSerie?: ProductSeries
 
     @IsOptional()
-    @Field(()=>String, {nullable:true})
+    @Field(() => String, { nullable: true })
     productOS?: string
 
     @IsOptional()
@@ -106,6 +106,10 @@ class PriceRange {
 
 @InputType()
 class PISearch {
+    @IsOptional()
+    @Field(() => String, { nullable: true })
+    memberId?: string
+    
     @IsOptional()
     @Field(() => String, { nullable: true })
     text?: string
@@ -171,8 +175,8 @@ export class ProductInquiry {
     sort?: string
 
     @IsOptional()
-    @Field(() => Direction, { nullable: true })
-    direction?: string
+    @Field(() => Number, { nullable: true })
+    direction?: number
 
     @IsNotEmpty()
     @Field(() => PISearch)

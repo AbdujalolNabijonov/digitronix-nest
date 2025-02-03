@@ -56,7 +56,7 @@ export class ArticlesInquiry {
 
     @IsOptional()
     @Field(() => Direction, { nullable: true })
-    direction?: Direction
+    direction?: number
 
     @IsOptional()
     @IsIn(avaibleArticleSorts)

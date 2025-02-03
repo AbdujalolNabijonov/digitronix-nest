@@ -89,13 +89,13 @@ export class MemberResolver {
 
     @UseGuards(AuthGuard)
     @Mutation(() => Member)
-    public async likeMember(
+    public async likeTargetMember(
         @Args("input") input: String,
         @AuthMember("_id") memberId: ObjectId
     ): Promise<Member> {
         console.log("Mutation: likeMember");
         const likeTargetId = shapeIntoMongoObjectId(input)
-        return await this.memberService.likeMember(likeTargetId, memberId)
+        return await this.memberService.likeTargetMember(likeTargetId, memberId)
     }
 
 

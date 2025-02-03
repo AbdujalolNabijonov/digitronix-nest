@@ -9,11 +9,6 @@ registerEnumType(CommentStatus, { name: "CommentStatus" })
 export enum CommentGroup {
     MEMBER = 'MEMBER',
     ARTICLE = 'ARTICLE',
-    LAPTOP = "LAPTOP",
-    DESKTOP = "DESKTOP",
-    GRAPHICS = "GRAPHICS",
-    KEYBOARD = "KEYBOARD",
-    MOUSE = "MOUSE",
-    CHAIR = "CHAIR"
+    PRODUCT = "PRODUCT"
 }
 registerEnumType(CommentGroup, { name: "CommentGroup" })

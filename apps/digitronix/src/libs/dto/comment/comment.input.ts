@@ -10,7 +10,7 @@ export class CommentInput {
     commentGroup: CommentGroup
 
     @IsNotEmpty()
-    @Length(5, 500)
+    @Length(3, 500)
     @Field(() => String)
     commentContent: string
 
@@ -43,7 +43,12 @@ export class CommentInquiry {
     @Field(() => Number)
     limit: number
 
+    @IsOptional()
+    @Field(() => String, { nullable: true })
+    sort?: string
+
     @IsNotEmpty()
+    @Field(() => CSearch)
     search: CSearch
 
 }

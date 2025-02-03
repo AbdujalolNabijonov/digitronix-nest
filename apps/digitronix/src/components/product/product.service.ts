@@ -18,6 +18,7 @@ import * as moment from "moment"
 import { ProductInput, ProductInquiry } from '../../libs/dto/product/product.input';
 import { GetAllProducts, Product } from '../../libs/dto/product/product';
 
+
 @Injectable()
 export class ProductService {
     constructor(
@@ -45,10 +46,10 @@ export class ProductService {
         if (!exist) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
         const product = await this.productModel.aggregate([
-            {$match: {_id: targetId}},
+            { $match: { _id: targetId } },
             lookupAuthMemberLiked(memberId),
             lookUpMember,
-            {$unwind: "$memberData"}
+            { $unwind: "$memberData" }
         ])
         if (memberId) {
             //view
@@ -90,9 +91,10 @@ export class ProductService {
     }
 
 
-    public async getAllProducts(input: ProductInquiry, memberId: ObjectId): Promise<GetAllProducts> {
+    public async getAllProducts(input: ProductInquiry, authId: ObjectId): Promise<GetAllProducts> {
         const { page, limit, sort, direction } = input;
         const {
+            memberId,
             text,
             productCategory,
             brandList,
@@ -103,23 +105,23 @@ export class ProductService {
             memoryList,
             graphicsList,
             connectList,
-            materialList
+            materialList,
         } = input.search
 
         const match: T = { productStatus: ProductStatus.ACTIVE }
+        if (memberId) match.memberId = shapeIntoMongoObjectId(memberId)
         if (text) match.productName = { $regex: new RegExp(text, "i") };
         if (productCategory) match.productCategory = productCategory;
         if (brandList && brandList.length) match.productBrand = { $in: brandList };
         if (pricesRange) match.productPrice = { $gte: pricesRange.start, $lte: pricesRange.end };
-        if (processorList && processorList.length) match.productCore = { $in: processorList };
+        if (processorList && processorList.length) match.productCore = { $in: processorList.map((processor) => new RegExp(processor.replace(/_/g, " "), "i")) };
         if (serieList && serieList.length) match.productSerie = { $in: serieList };
         if (displayList && displayList.length) match.productDisplay = { $in: displayList };
         if (memoryList && memoryList.length) match.productMemory = { $in: memoryList };
-        if (graphicsList && graphicsList.length) match.productGraphics = { $in: graphicsList };
+        if (graphicsList && graphicsList.length) match.productGraphics = { $in: graphicsList.map(graphics=>new RegExp(graphics.replace(/_/g, " "), "i")) };
         if (connectList && connectList.length) match.productConnectivity = { $in: connectList };
         if (materialList && materialList.length) match.productMaterial = { $in: materialList };
-
-        const sorting: T = { [sort ?? "createdAt"]: direction ?? Direction.DESC }
+        const sorting:any = { [sort ?? "createdAt"]: direction ?? Direction.DESC }
         const result = await this.productModel.aggregate([
             { $match: match },
             { $sort: sorting },
@@ -128,7 +130,7 @@ export class ProductService {
                     list: [
                         { $skip: (page - 1) * limit },
                         { $limit: limit },
-                        lookupAuthMemberLiked(memberId),
+                        lookupAuthMemberLiked(authId),
                         lookUpMember,
                         { $unwind: "$memberData" }
                     ],
@@ -136,8 +138,7 @@ export class ProductService {
                 }
             }
         ]).exec()
-
-        if (!result[0]) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        
         return result[0]
     }
 

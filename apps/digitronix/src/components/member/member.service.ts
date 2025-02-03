@@ -140,7 +140,7 @@ export class MemberService {
         return members[0]
     }
 
-    public async likeMember(likeTargetId: ObjectId, memberId: ObjectId): Promise<Member> {
+    public async likeTargetMember(likeTargetId: ObjectId, memberId: ObjectId): Promise<Member> {
         const target = await this.memberModel.findOne({ _id: likeTargetId, memberStatus: MemberStatus.ACTIVE }).exec()
         if (!target) throw new BadRequestException(Message.NO_DATA_FOUND)
 

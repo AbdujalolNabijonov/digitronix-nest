@@ -14,6 +14,7 @@ import { lookupAuthMemberLiked, lookUpMember, shapeIntoMongoObjectId } from '../
 import { T } from '../../libs/types/general';
 import { LikeService } from '../like/like.service';
 import { LikeInput } from '../../libs/dto/like/like.input';
+import { LikeGroup } from '../../libs/enums/like.enum';
 
 @Injectable()
 export class CommentService {
@@ -100,7 +101,7 @@ export class CommentService {
         const likeInput: LikeInput = {
             memberId,
             likeTargetId,
-            likeGroup: existance.commentGroup
+            likeGroup: LikeGroup.COMMENT
         }
         const modifier = await this.likeService.likeTargetToggle(likeInput);
 
@@ -114,25 +115,10 @@ export class CommentService {
             case CommentGroup.ARTICLE:
                 await this.articleService.articleStatsEditor(commentTargetId, modifier, "artileComments");
                 break;
-            case CommentGroup.DESKTOP:
-                await this.productSevice.productStatsEdit(commentTargetId, modifier, "productComments");
-                break;
-            case CommentGroup.LAPTOP:
-                await this.productSevice.productStatsEdit(commentTargetId, modifier, "productComments");
-                break;
             case CommentGroup.MEMBER:
                 await this.memberService.memberStatsEdit(commentTargetId, modifier, "memberComments");
                 break;
-            case CommentGroup.CHAIR:
-                await this.productSevice.productStatsEdit(commentTargetId, modifier, "productComments");
-                break;
-            case CommentGroup.GRAPHICS:
-                await this.productSevice.productStatsEdit(commentTargetId, modifier, "productComments");
-                break;
-            case CommentGroup.KEYBOARD:
-                await this.productSevice.productStatsEdit(commentTargetId, modifier, "productComments");
-                break;
-            case CommentGroup.MOUSE:
+            case CommentGroup.PRODUCT:
                 await this.productSevice.productStatsEdit(commentTargetId, modifier, "productComments");
                 break;
             default:

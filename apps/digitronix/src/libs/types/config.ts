@@ -141,3 +141,47 @@ export const lookUpAuthMemberFollowed = (input: LookupAuthFollowed) => {
     }
 }
 
+
+export const lookupMyFavorities = (memberId: ObjectId) => {
+    return ({
+        from: "likes",
+        let: {
+            localMemberId: memberId,
+            localLikeTargetId: "_id"
+        },
+        pipeline: [
+            {
+                $match: {
+                    $expr: {
+                        $and: [
+                            { $eq: ["$likeTargetId", "$$localLikeTargetId"] }, { $eq: ["$memberId", "$$localMemberId"] }
+                        ]
+                    }
+                }
+            }
+        ],
+        as: "favorityProducts"
+    })
+}
+
+export const lookupVisitedProducts = (memberId: any) => {
+    return ({
+        from: "products",
+        let: {
+            localViewTargetId: "$viewTargetId",
+            localMemberId: memberId
+        },
+        pipeline: [
+            {
+                $match: {
+                    $expr: {
+                        $and: [
+                            { $eq: ["$_id", "$$localViewTargetId"] }, { $eq: ["$memberId", "$$localMemberId"] }
+                        ]
+                    }
+                }
+            }
+        ],
+        as: "visitedProduct"
+    })
+}

@@ -18,7 +18,6 @@ import * as moment from "moment"
 import { ProductInput, ProductInquiry } from '../../libs/dto/product/product.input';
 import { GetAllProducts, Product } from '../../libs/dto/product/product';
 
-
 @Injectable()
 export class ProductService {
     constructor(
@@ -56,7 +55,7 @@ export class ProductService {
             const viewInput: ViewInput = {
                 memberId,
                 viewTargetId: targetId,
-                viewGroup: ViewGroup.COMPUTER
+                viewGroup: ViewGroup.PRODUCT
             }
             const existanceView = await this.viewService.recordView(viewInput);
             if (existanceView) {
@@ -118,10 +117,10 @@ export class ProductService {
         if (serieList && serieList.length) match.productSerie = { $in: serieList };
         if (displayList && displayList.length) match.productDisplay = { $in: displayList };
         if (memoryList && memoryList.length) match.productMemory = { $in: memoryList };
-        if (graphicsList && graphicsList.length) match.productGraphics = { $in: graphicsList.map(graphics=>new RegExp(graphics.replace(/_/g, " "), "i")) };
+        if (graphicsList && graphicsList.length) match.productGraphics = { $in: graphicsList.map(graphics => new RegExp(graphics.replace(/_/g, " "), "i")) };
         if (connectList && connectList.length) match.productConnectivity = { $in: connectList };
         if (materialList && materialList.length) match.productMaterial = { $in: materialList };
-        const sorting:any = { [sort ?? "createdAt"]: direction ?? Direction.DESC }
+        const sorting: T = { [sort ?? "createdAt"]: direction ?? Direction.DESC }
         const result = await this.productModel.aggregate([
             { $match: match },
             { $sort: sorting },
@@ -138,7 +137,7 @@ export class ProductService {
                 }
             }
         ]).exec()
-        
+
         return result[0]
     }
 
@@ -149,7 +148,7 @@ export class ProductService {
         const likeInput: LikeInput = {
             memberId,
             likeTargetId: targetLikeId,
-            likeGroup: exist.productCategory
+            likeGroup: LikeGroup.PRODUCT
         }
 
         const modifier = await this.likeService.likeTargetToggle(likeInput);

@@ -3,6 +3,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { Like } from '../../libs/dto/like/like';
 import { LikeInput } from '../../libs/dto/like/like.input';
+import { ProductInquiry } from '../../libs/dto/product/product.input';
+import { GetAllProducts } from '../../libs/dto/product/product';
+import { T } from '../../libs/types/general';
+import { LikeGroup } from '../../libs/enums/like.enum';
+import { Direction } from '../../libs/enums/common.enum';
+import { lookup } from 'node:dns/promises';
+import { lookupAuthMemberLiked } from '../../libs/types/config';
 
 @Injectable()
 export class LikeService {
@@ -37,4 +44,52 @@ export class LikeService {
         return await this.likeModel.findOne(input).exec()
     }
 
+
+    public async favorityProducts(input: ProductInquiry, memberId: ObjectId): Promise<GetAllProducts> {
+        const { page, limit, sort, direction } = input
+        const match: T = {
+            likeGroup: LikeGroup.PRODUCT,
+            memberId
+        }
+        const sorting: T = { [sort ?? "createdAt"]: direction ?? Direction.ASC };
+        const favoriteList = await this.likeModel.aggregate([
+            { $match: match },
+            { $sort: sorting },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "likeTargetId",
+                    foreignField: "_id",
+                    as: "favorityProduct"
+                }
+            },
+            { $unwind: "$favorityProduct" },
+            {
+                $facet: {
+                    list: [
+                        { $skip: (page - 1) * limit },
+                        { $limit: limit },
+                        {
+                            $lookup: {
+                                from: "members",
+                                localField: "memberId",
+                                foreignField: "_id",
+                                as: "favorityProduct.memberData"
+                            }
+                        },
+                        lookupAuthMemberLiked(memberId, "$likeTargetId"),
+                        { $unwind: "$favorityProduct.memberData" }
+                    ],
+                    metaCounter: [{ $count: "total" }]
+                }
+            }
+        ]).exec()
+        let result = {
+            list: favoriteList[0].list.map(ele => {
+                return ({ ...ele.favorityProduct, meLiked: ele.meLiked })
+            }),
+            metaCounter: favoriteList[0].metaCounter
+        }
+        return result
+    }
 }

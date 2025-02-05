@@ -6,7 +6,6 @@ export enum ArticleCategory {
     HUMOR = 'HUMOR',
     RECOMMEND = 'RECOMMEND',
 }
-
 registerEnumType(ArticleCategory, { name: "ArticleCategory" });
 
 export enum ArticleStatus {

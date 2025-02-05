@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Search } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException,} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { Follower, Followers, Following, Followings } from '../../libs/dto/follow/follow';
@@ -7,6 +7,7 @@ import { Message } from '../../libs/common';
 import { FollowInquiry } from '../../libs/dto/follow/follow.input';
 import { Direction } from '../../libs/enums/common.enum';
 import { lookUpAuthMemberFollowed, lookupAuthMemberLiked, lookupFollowerMemberData, lookupFollowingMemberData } from '../../libs/types/config';
+import { T } from '../../libs/types/general';
 
 @Injectable()
 export class FollowService {
@@ -19,7 +20,7 @@ export class FollowService {
         targetMemberId: ObjectId,
         memberId: ObjectId
     ): Promise<Follower> {
-        if (targetMemberId === memberId) throw new InternalServerErrorException(Message.SELF_SUBSCRIPTION_DENIED)
+        if (String(targetMemberId) === String(memberId)) throw new InternalServerErrorException(Message.SELF_SUBSCRIPTION_DENIED)
 
         const existance = await this.memberService.checkMember(targetMemberId);
         if (!existance) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
@@ -130,6 +131,20 @@ export class FollowService {
         return result[0]
     }
 
+    public async deleteFollower(memberId: ObjectId, followerId: ObjectId): Promise<Follower> {
+        const match: T = {
+            followingId: memberId,
+            followerId: followerId
+        }
+        const result = await this.followModel.findOneAndDelete(match).exec();
+        if (result) {
+            await this.memberService.memberStatsEdit(followerId, -1, "memberFollowings")
+            await this.memberService.memberStatsEdit(memberId, -1, "memberFollowers")
+        }else{
+            throw new BadRequestException(Message.NO_DATA_FOUND)
+        }
+        return result
+    }
     public async checkExistance(targetMemberId: ObjectId, memberId: ObjectId): Promise<Follower | null> {
         const search = {
             followingId: targetMemberId,

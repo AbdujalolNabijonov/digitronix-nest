@@ -12,18 +12,17 @@ export class ArticleInput {
     articleCategory: ArticleCategory
 
     @IsNotEmpty()
-    @Length(5, 50)
     @Field(() => String)
     articleTitle: string
 
     @IsNotEmpty()
-    @Length(5, 200)
+    @Length(5, 500)
     @Field(() => String)
     articleContext: string
 
-    @IsNotEmpty()
-    @Field(() => String)
-    articleImage: string
+    @IsOptional()
+    @Field(() => String, {nullable:true})
+    articleImage?: string
 }
 @InputType()
 class ASearch {

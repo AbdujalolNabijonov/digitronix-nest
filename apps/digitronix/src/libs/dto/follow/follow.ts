@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
-import { ObjectId } from "mongoose";
+import { ObjectId } from "bson";
 import { Member } from "../member/member";
 import { MeLiked } from "../like/like";
 
@@ -17,6 +17,9 @@ class MeFollowed {
 
 @ObjectType()
 export class Follower {
+    @Field(() => String)
+    _id:ObjectId
+
     @Field(() => String)
     followingId: ObjectId
 
@@ -65,7 +68,7 @@ export class Following {
 
 @ObjectType()
 class TotalFollow {
-    @Field(() => Number, {nullable:true})
+    @Field(() => Number, { nullable: true })
     total?: number
 }
 

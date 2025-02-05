@@ -59,4 +59,15 @@ export class FollowResolver {
         return await this.followService.getFollowerMembers(input, targetMemberId, memberId)
     }
 
+    @UseGuards(AuthGuard)
+    @Mutation(() => Follower)
+    public async deleteFollower(
+        @Args("input") followerId: String,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Follower> {
+        console.log("Mutation: deleteFollower");
+        const targetFollowerId = shapeIntoMongoObjectId(followerId);
+        return await this.followService.deleteFollower(memberId, targetFollowerId);
+    }
+
 }

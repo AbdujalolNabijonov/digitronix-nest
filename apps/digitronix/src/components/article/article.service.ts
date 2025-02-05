@@ -106,7 +106,7 @@ export class ArticleService {
         if (articleStatus) match.articleStatus = articleStatus;
         if (text) match.articleTitle = { $regex: new RegExp(text, "i") };
 
-        const sorting = { [sort ?? "createdAt"]: direction ?? Direction.DESC }
+        const sorting:T = { [sort ?? "createdAt"]: direction ?? Direction.DESC }
 
         const result = await this.articleModel.aggregate([
             { $match: match },

@@ -21,6 +21,11 @@ export class UpdateMemberInquiry {
     memberFullName?: string
 
     @IsOptional()
+    @Length(5, 300)
+    @Field(() => String, { nullable: true })
+    memberAddress?: string
+
+    @IsOptional()
     @Length(5, 12)
     @Field(() => String, { nullable: true })
     memberPassword?: string

@@ -46,7 +46,6 @@ export class FaqService {
             }
         ]).exec();
 
-        if (result[0].list.length < 1) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
         return result[0]
     }
 

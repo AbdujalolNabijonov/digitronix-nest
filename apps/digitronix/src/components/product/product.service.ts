@@ -41,7 +41,7 @@ export class ProductService {
     }
 
     public async getProduct(targetId: ObjectId, memberId: ObjectId): Promise<Product> {
-        let exist = await this.productModel.findById(targetId).exec();
+        let exist = await this.productModel.findOne({_id:targetId, productStatus:ProductStatus.ACTIVE}).exec();
         if (!exist) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
         const product = await this.productModel.aggregate([

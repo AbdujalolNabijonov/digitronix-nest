@@ -50,7 +50,7 @@ export class Article {
 }
 
 @ObjectType()
-class ArticleTotal {
+export class ArticleTotal {
     @Field(() => Number, { nullable: true })
     total?: number
 }

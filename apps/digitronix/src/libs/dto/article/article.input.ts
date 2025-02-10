@@ -2,7 +2,7 @@ import { Field, InputType } from "@nestjs/graphql";
 import { IsIn, IsNotEmpty, IsOptional, Length } from "class-validator";
 import { ArticleCategory, ArticleStatus } from "../../enums/article.enum";
 import { Direction } from "../../enums/common.enum";
-import { avaibleArticleSorts } from "../../types/config";
+import { avaibleArticleSorts } from "../../config";
 import { ObjectId } from "mongoose";
 
 @InputType()

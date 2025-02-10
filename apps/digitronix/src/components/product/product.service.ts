@@ -13,7 +13,7 @@ import { ProductStatus } from '../../libs/enums/product.enum';
 import { UpdateProduct } from '../../libs/dto/product/product.update';
 import { T } from '../../libs/types/general';
 import { Direction } from '../../libs/enums/common.enum';
-import { lookupAuthMemberLiked, lookUpMember, shapeIntoMongoObjectId } from '../../libs/types/config';
+import { lookupAuthMemberLiked, lookUpMember, shapeIntoMongoObjectId } from '../../libs/config';
 import * as moment from "moment"
 import { ProductInput, ProductInquiry } from '../../libs/dto/product/product.input';
 import { GetAllProducts, Product } from '../../libs/dto/product/product';
@@ -49,7 +49,7 @@ export class ProductService {
             lookupAuthMemberLiked(memberId),
             lookUpMember,
             { $unwind: "$memberData" }
-        ])
+        ], {new:true})
         if (memberId) {
             //view
             const viewInput: ViewInput = {
@@ -105,9 +105,14 @@ export class ProductService {
             graphicsList,
             connectList,
             materialList,
+            productStatus
         } = input.search
 
-        const match: T = { productStatus: ProductStatus.ACTIVE }
+        const match: T = {}
+        if (productStatus) { match.productStatus = productStatus }
+        else {
+            match.productStatus = ProductStatus.ACTIVE
+        }
         if (memberId) match.memberId = shapeIntoMongoObjectId(memberId)
         if (text) match.productName = { $regex: new RegExp(text, "i") };
         if (productCategory) match.productCategory = productCategory;

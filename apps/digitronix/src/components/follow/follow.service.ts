@@ -6,7 +6,7 @@ import { MemberService } from '../member/member.service';
 import { Message } from '../../libs/common';
 import { FollowInquiry } from '../../libs/dto/follow/follow.input';
 import { Direction } from '../../libs/enums/common.enum';
-import { lookUpAuthMemberFollowed, lookupAuthMemberLiked, lookupFollowerMemberData, lookupFollowingMemberData } from '../../libs/types/config';
+import { lookUpAuthMemberFollowed, lookupAuthMemberLiked, lookupFollowerMemberData, lookupFollowingMemberData } from '../../libs/config';
 import { T } from '../../libs/types/general';
 
 @Injectable()
@@ -49,9 +49,9 @@ export class FollowService {
         targetMemberId: ObjectId,
         memberId: ObjectId
     ): Promise<Follower> {
+        console.log(targetMemberId)
         const existance = await this.memberService.checkMember(targetMemberId)
         if (!existance) throw new InternalServerErrorException(Message.NO_DATA_FOUND)
-
         const subscribedBefore = await this.checkExistance(targetMemberId, memberId);
         if (subscribedBefore) {
             const followInput = {

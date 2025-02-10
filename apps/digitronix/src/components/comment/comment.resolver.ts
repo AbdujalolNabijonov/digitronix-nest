@@ -5,12 +5,12 @@ import { AuthGuard } from '../auth/guards/auth.guard';
 import { CommentInput, CommentInquiry } from '../../libs/dto/comment/comment.input';
 import { AuthMember } from '../auth/decorators/auth.member';
 import { ObjectId } from 'mongoose';
-import { shapeIntoMongoObjectId } from '../../libs/types/config';
+import { shapeIntoMongoObjectId } from '../../libs/config';
 import { UpdateComment } from '../../libs/dto/comment/comment.update';
 import { Comment, Comments } from '../../libs/dto/comment/comment';
 import { WithoutGuards } from '../auth/guards/without.guard';
 import { Roles } from '../auth/decorators/auth.roles';
-import { MemberGroup } from '../../libs/types/member';
+import { MemberGroup } from '../../libs/enums/member';
 import { RolesGuard } from '../auth/guards/roles.guard';
 
 @Resolver()

@@ -10,7 +10,7 @@ import {
     ProductLabel,
 } from "../../enums/product.enum";
 import { ObjectId } from "mongoose";
-import { avaibleProductSorts } from "../../types/config";
+import { avaibleProductSorts } from "../../config";
 import { Direction } from "../../enums/common.enum";
 
 @InputType()
@@ -90,8 +90,8 @@ export class ProductInput {
     productImages: string[]
 
     @IsOptional()
-    @Field(() => [String], { nullable: true })
-    productDesc?: string[];
+    @Field(() => String, { nullable: true })
+    productDesc?: string;
 }
 
 

@@ -82,7 +82,7 @@ const productSchema = new Schema({
         required: true
     },
     productDesc: {
-        type: [String]
+        type: String
     },
     productViews: {
         type: Number,

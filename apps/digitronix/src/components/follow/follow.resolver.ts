@@ -4,7 +4,7 @@ import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { AuthMember } from '../auth/decorators/auth.member';
 import { ObjectId } from 'mongoose';
-import { shapeIntoMongoObjectId } from '../../libs/types/config';
+import { shapeIntoMongoObjectId } from '../../libs/config';
 import { WithoutGuards } from '../auth/guards/without.guard';
 import { FollowInquiry } from '../../libs/dto/follow/follow.input';
 import { Follower, Followers, Followings } from '../../libs/dto/follow/follow';

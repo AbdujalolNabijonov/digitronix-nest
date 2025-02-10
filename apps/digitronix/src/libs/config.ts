@@ -1,7 +1,7 @@
 import { ObjectId } from "bson"
 import * as path from "path"
 import { v4 as uuidv4 } from "uuid"
-import { T } from "./general"
+import { T } from "./types/general"
 
 //CONSTS
 export const avaibleMemberSorts = [
@@ -142,46 +142,48 @@ export const lookUpAuthMemberFollowed = (input: LookupAuthFollowed) => {
 }
 
 
-export const lookupMyFavorities = (memberId: ObjectId) => {
-    return ({
-        from: "likes",
-        let: {
-            localMemberId: memberId,
-            localLikeTargetId: "_id"
-        },
-        pipeline: [
-            {
-                $match: {
-                    $expr: {
-                        $and: [
-                            { $eq: ["$likeTargetId", "$$localLikeTargetId"] }, { $eq: ["$memberId", "$$localMemberId"] }
-                        ]
+export const lookupMyFavorities = () => {
+    return {
+        $lookup: {
+            from: "products",
+            let: {
+                localLikeTargetId: "$likeTargetId"
+            },
+            pipeline: [
+                {
+                    $match: {
+                        $expr: {
+                            $and: [
+                                { $eq: ["$_id", "$$localLikeTargetId"] }, { $eq: ["$productStatus", "ACTIVE"] }
+                            ]
+                        }
                     }
                 }
-            }
-        ],
-        as: "favorityProducts"
-    })
+            ],
+            as: "favorityProduct"
+        }
+    }
 }
 
-export const lookupVisitedProducts = (memberId: any) => {
-    return ({
-        from: "products",
-        let: {
-            localViewTargetId: "$viewTargetId",
-            localMemberId: memberId
-        },
-        pipeline: [
-            {
-                $match: {
-                    $expr: {
-                        $and: [
-                            { $eq: ["$_id", "$$localViewTargetId"] }, { $eq: ["$memberId", "$$localMemberId"] }
-                        ]
+export const lookupVisitedProducts = () => {
+    return {
+        $lookup: {
+            from: "products",
+            let: {
+                localViewTargetId: "$viewTargetId",
+            },
+            pipeline: [
+                {
+                    $match: {
+                        $expr: {
+                            $and: [
+                                { $eq: ["$_id", "$$localViewTargetId"] }, { $eq: ["$productStatus", "ACTIVE"] }
+                            ]
+                        }
                     }
                 }
-            }
-        ],
-        as: "visitedProduct"
-    })
+            ],
+            as: "visitedProduct"
+        }
+    }
 }

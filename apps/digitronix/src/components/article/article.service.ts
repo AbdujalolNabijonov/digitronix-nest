@@ -9,7 +9,7 @@ import { UpdateArticle } from '../../libs/dto/article/article.update';
 import { T } from '../../libs/types/general';
 import { ArticleStatus } from '../../libs/enums/article.enum';
 import * as moment from 'moment';
-import { lookupAuthMemberLiked, lookUpMember, shapeIntoMongoObjectId } from '../../libs/types/config';
+import { lookupAuthMemberLiked, lookUpMember, shapeIntoMongoObjectId } from '../../libs/config';
 import { ViewService } from '../view/view.service';
 import { ViewInput } from '../../libs/dto/view/view.input';
 import { ViewGroup } from '../../libs/enums/view.enum';

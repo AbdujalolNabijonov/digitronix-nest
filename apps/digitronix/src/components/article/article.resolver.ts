@@ -8,7 +8,7 @@ import { AuthMember } from '../auth/decorators/auth.member';
 import { ObjectId } from 'mongoose';
 import { UpdateArticle } from '../../libs/dto/article/article.update';
 import { WithoutGuards } from '../auth/guards/without.guard';
-import { shapeIntoMongoObjectId } from '../../libs/types/config';
+import { shapeIntoMongoObjectId } from '../../libs/config';
 import { Roles } from '../auth/decorators/auth.roles';
 import { MemberType } from '../../libs/enums/member.enum';
 import { RolesGuard } from '../auth/guards/roles.guard';

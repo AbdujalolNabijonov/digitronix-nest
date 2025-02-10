@@ -9,7 +9,7 @@ import { T } from '../../libs/types/general';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { Direction } from '../../libs/enums/common.enum';
 import { lookup } from 'node:dns/promises';
-import { lookupAuthMemberLiked } from '../../libs/types/config';
+import { lookupAuthMemberLiked, lookupMyFavorities } from '../../libs/config';
 
 @Injectable()
 export class LikeService {
@@ -51,18 +51,12 @@ export class LikeService {
             likeGroup: LikeGroup.PRODUCT,
             memberId
         }
+
         const sorting: T = { [sort ?? "createdAt"]: direction ?? Direction.ASC };
         const favoriteList = await this.likeModel.aggregate([
             { $match: match },
             { $sort: sorting },
-            {
-                $lookup: {
-                    from: "products",
-                    localField: "likeTargetId",
-                    foreignField: "_id",
-                    as: "favorityProduct"
-                }
-            },
+            lookupMyFavorities(),
             { $unwind: "$favorityProduct" },
             {
                 $facet: {

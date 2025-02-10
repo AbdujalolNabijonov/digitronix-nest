@@ -8,7 +8,7 @@ import { GetAllProducts } from '../../libs/dto/product/product';
 import { T } from '../../libs/types/general';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { Direction } from '../../libs/enums/common.enum';
-import { lookupAuthMemberLiked, lookupVisitedProducts } from '../../libs/types/config';
+import { lookupAuthMemberLiked, lookupVisitedProducts } from '../../libs/config';
 
 @Injectable()
 export class ViewService {
@@ -37,7 +37,7 @@ export class ViewService {
         const visitedProducts = await this.viewModel.aggregate([
             { $match: match },
             { $sort: sorting },
-            { $lookup: lookupVisitedProducts(memberId) },
+            lookupVisitedProducts(),
             { $unwind: "$visitedProduct" },
             {
                 $facet: {
@@ -60,7 +60,7 @@ export class ViewService {
             }
         ]).exec()
         const result = {
-            list: visitedProducts[0].list.map(ele=>({...ele.visitedProduct,meLiked:ele.meLiked })),
+            list: visitedProducts[0].list.map(ele => ({ ...ele.visitedProduct, meLiked: ele.meLiked })),
             metaCounter: visitedProducts[0].metaCounter
         }
         return result

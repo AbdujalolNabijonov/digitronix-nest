@@ -19,7 +19,7 @@ import AppResolver from './app.resolver';
       formatError: (error: any) => {
         const graphqlFormattedError = {
           code: error?.extensions.code,
-          message: error?.extensions?.execption?.response?.message || error?.extensions?.response?.message || error?.message
+          message: error.extensions?.execption?.response?.message || error.extensions.originalError?.message || error?.extensions?.response?.message || error?.message
         }
         console.log("GRAPHQL GLOBAL ERR: ", graphqlFormattedError)
         return graphqlFormattedError;

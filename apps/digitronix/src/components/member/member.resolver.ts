@@ -4,13 +4,13 @@ import { LoginInput, MemberInput, MemberInquiry } from '../../libs/dto/member/me
 import { Member, Members } from '../../libs/dto/member/member';
 import { UseGuards, UsePipes } from '@nestjs/common';
 import { Roles } from '../auth/decorators/auth.roles';
-import { MemberGroup } from '../../libs/types/member';
+import { MemberGroup } from '../../libs/enums/member';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UpdateMemberInquiry } from '../../libs/dto/member/member.update';
 import { WithoutGuards } from '../auth/guards/without.guard';
 import { AuthMember } from '../auth/decorators/auth.member';
 import { ObjectId } from 'mongoose';
-import { avaibleMimeType, getSerialNumber, shapeIntoMongoObjectId } from '../../libs/types/config';
+import { avaibleMimeType, getSerialNumber, shapeIntoMongoObjectId } from '../../libs/config';
 import { GraphQLUpload, FileUpload } from "graphql-upload"
 import { Message } from '../../libs/common';
 import { createWriteStream } from 'fs';

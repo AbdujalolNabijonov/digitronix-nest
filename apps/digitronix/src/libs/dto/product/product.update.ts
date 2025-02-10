@@ -4,6 +4,7 @@ import { ObjectId } from "mongoose";
 import {
     Connectivity,
     MaterialType,
+    OperatingSystem,
     ProductBrand,
     ProductCategory,
     ProductLabel,
@@ -77,7 +78,11 @@ export class UpdateProduct {
     productWeight?: number
 
     @IsOptional()
-    @Field(() =>String, { nullable: true })
+    @Field(() => OperatingSystem, { nullable: true })
+    productOS?: OperatingSystem
+
+    @IsOptional()
+    @Field(() => String, { nullable: true })
     productGraphics?: string;
 
     @IsOptional()
@@ -93,8 +98,8 @@ export class UpdateProduct {
     productImages?: String[]
 
     @IsOptional()
-    @Field(() => [String], { nullable: true })
-    productDesc?: String[];
+    @Field(() => String, { nullable: true })
+    productDesc?: String;
 
     soldAt?: Date
     deletedAt?: Date

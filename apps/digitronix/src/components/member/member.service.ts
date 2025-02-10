@@ -8,8 +8,8 @@ import { Message } from '../../libs/common';
 import { T } from '../../libs/types/general';
 import { Direction } from '../../libs/enums/common.enum';
 import { UpdateMemberInquiry } from '../../libs/dto/member/member.update';
-import { lookupAuthMemberLiked, shapeIntoMongoObjectId } from '../../libs/types/config';
-import { MemberStatus } from '../../libs/types/member';
+import { lookupAuthMemberLiked, shapeIntoMongoObjectId } from '../../libs/config';
+import { MemberStatus } from '../../libs/enums/member';
 import { MemberType } from '../../libs/enums/member.enum';
 import { LikeService } from '../like/like.service';
 import { LikeInput } from '../../libs/dto/like/like.input';
@@ -39,24 +39,19 @@ export class MemberService {
         }
     }
 
-    public async login(input: LoginInput): Promise<Member | Error> {
-        try {
-            let member: Member;
-            if (input.memberEmail) { member = await this.memberModel.findOne({ memberEmail: input.memberEmail, memberStatus: MemberStatus.ACTIVE }).exec() }
-            else if (input.memberNick) { member = await this.memberModel.findOne({ memberNick: input.memberNick, memberStatus: MemberStatus.ACTIVE }).exec() }
+    public async login(input: LoginInput): Promise<Member> {
+        let member: Member;
+        if (input.memberEmail) { member = await this.memberModel.findOne({ memberEmail: input.memberEmail, memberStatus: MemberStatus.ACTIVE }).exec() }
+        else if (input.memberNick) { member = await this.memberModel.findOne({ memberNick: input.memberNick, memberStatus: MemberStatus.ACTIVE }).exec() }
 
-            if (!member) { throw new Error(Message.NO_DATA_FOUND); }
-            const isCorrectPassword = await this.authService.comparePassword(input.memberPassword, member.memberPassword);
-            if (!isCorrectPassword) { throw new Error(Message.WRONG_PASSWORD) }
-            else if (member.memberStatus === MemberStatus.BLOCK) {
-                throw new Error("You have been blocked!")
-            } else {
-                member.accessToken = await this.authService.jwtGenerator(member);
-                return member
-            }
-        } catch (err: any) {
-            console.log("Error: Service.model:", err.message);
-            return err
+        if (!member) { throw new Error(Message.NO_DATA_FOUND); }
+        const isCorrectPassword = await this.authService.comparePassword(input.memberPassword, member.memberPassword);
+        if (!isCorrectPassword) { throw new BadRequestException(Message.WRONG_PASSWORD)}
+        else if (member.memberStatus === MemberStatus.BLOCK) {
+            throw new Error("You have been blocked!")
+        } else {
+            member.accessToken = await this.authService.jwtGenerator(member);
+            return member
         }
     }
 

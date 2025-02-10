@@ -2,7 +2,7 @@ import { Field, ObjectType } from "@nestjs/graphql";
 import { ObjectId } from "mongoose";
 import { MemberAuthType, MemberType } from "../../enums/member.enum";
 import { IsOptional } from "class-validator";
-import { MemberStatus } from "../../types/member";
+import { MemberStatus } from "../../enums/member";
 import { MeLiked } from "../like/like";
 
 @ObjectType()

@@ -10,7 +10,7 @@ import { ProductService } from '../product/product.service';
 import { UpdateComment } from '../../libs/dto/comment/comment.update';
 import { Comment, Comments } from '../../libs/dto/comment/comment';
 import * as moment from 'moment';
-import { lookupAuthMemberLiked, lookUpMember, shapeIntoMongoObjectId } from '../../libs/types/config';
+import { lookupAuthMemberLiked, lookUpMember, shapeIntoMongoObjectId } from '../../libs/config';
 import { T } from '../../libs/types/general';
 import { LikeService } from '../like/like.service';
 import { LikeInput } from '../../libs/dto/like/like.input';

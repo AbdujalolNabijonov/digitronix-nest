@@ -14,7 +14,6 @@ import { MeLiked } from "../like/like";
 
 @ObjectType()
 export class Product {
-
     @Field(() => String)
     _id: ObjectId
 
@@ -75,8 +74,8 @@ export class Product {
     @Field(() => [String])
     productImages: string[]
 
-    @Field(() => [String], { nullable: true })
-    productDesc?: string[];
+    @Field(() => String, { nullable: true })
+    productDesc?: string;
 
     @Field(() => Number)
     productViews: number

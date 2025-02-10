@@ -1,13 +1,13 @@
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { ProductService } from './product.service';
 import { Roles } from '../auth/decorators/auth.roles';
-import { MemberGroup } from '../../libs/types/member';
+import { MemberGroup } from '../../libs/enums/member';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { UseGuards } from '@nestjs/common';
 import { AuthMember } from '../auth/decorators/auth.member';
 import { ObjectId } from 'mongoose';
 import { WithoutGuards } from '../auth/guards/without.guard';
-import { shapeIntoMongoObjectId } from '../../libs/types/config';
+import { shapeIntoMongoObjectId } from '../../libs/config';
 import { UpdateProduct } from '../../libs/dto/product/product.update';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { ProductInput, ProductInquiry } from '../../libs/dto/product/product.input';

@@ -8,6 +8,8 @@ import * as url from "url"
 import { MemberType } from '../libs/enums/member.enum';
 import { NoticeService } from '../components/notice/notice.service';
 import { NoticeInput } from '../libs/dto/notice/notice.input';
+import { shapeIntoMongoObjectId } from '../libs/config';
+import { NoticeGroup } from '../libs/enums/notice.enum';
 
 interface MessagePayload {
   event: string;
@@ -44,17 +46,23 @@ export class SocketGateway implements OnGatewayInit {
   @SubscribeMessage('message')
   async handleMessage(client: WebSocket, payload: any) {
     const member = this.connectedClients.get(client) || null
-    if (payload.event === "notice" && member.memberType === MemberType.ADMIN) {
+
+    if (payload.event === "notice") {
       const noticeInput: NoticeInput = {
+        noticeTitle: payload.noticeTitle,
         noticeContent: payload.noticeContent,
-        memberId: member._id
+        noticeGroup: payload.noticeGroup,
+        memberId: shapeIntoMongoObjectId(member._id),
+      }
+      if (payload.noticeTargetId) {
+        noticeInput.noticeTargetId = shapeIntoMongoObjectId(payload.noticeTargetId)
       }
       await this.noticeService.createNotice(noticeInput)
-      const notices = await this.noticeService.getAllNotices({ page: 1, limit: 5, search: {} })
+      const notices = await this.noticeService.getAllNotices(member._id, { page:1, limit: 10, search: { noticeGroup: payload.noticeGroup } })
+
       const noticesMessage = {
         event: "notices",
-        notices: notices,
-        memberData: member
+        notices: notices
       }
       await this.emitMessage(noticesMessage)
     } else {
@@ -83,7 +91,7 @@ export class SocketGateway implements OnGatewayInit {
     }
 
     if (member) {
-      const notices = await this.noticeService.getAllNotices({ page: 1, limit: 5, search: {} })
+      const notices = await this.noticeService.getAllNotices(member,{ page: 1, limit: 5, search: {} })
       const noticePayload = {
         event: "notices",
         notices

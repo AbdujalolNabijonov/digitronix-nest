@@ -9,7 +9,6 @@ import { MemberType } from '../libs/enums/member.enum';
 import { NoticeService } from '../components/notice/notice.service';
 import { NoticeInput } from '../libs/dto/notice/notice.input';
 import { shapeIntoMongoObjectId } from '../libs/config';
-import { NoticeGroup } from '../libs/enums/notice.enum';
 
 interface MessagePayload {
   event: string;
@@ -29,6 +28,7 @@ export class SocketGateway implements OnGatewayInit {
   private logger = new Logger()
   private connectedClients = new Map<WebSocket, Member>()
   private totalClients: number = 0;
+  private messages = []
 
   constructor(
     private readonly authService: AuthService,
@@ -46,7 +46,6 @@ export class SocketGateway implements OnGatewayInit {
   @SubscribeMessage('message')
   async handleMessage(client: WebSocket, payload: any) {
     const member = this.connectedClients.get(client) || null
-
     if (payload.event === "notice") {
       const noticeInput: NoticeInput = {
         noticeTitle: payload.noticeTitle,
@@ -58,8 +57,7 @@ export class SocketGateway implements OnGatewayInit {
         noticeInput.noticeTargetId = shapeIntoMongoObjectId(payload.noticeTargetId)
       }
       await this.noticeService.createNotice(noticeInput)
-      const notices = await this.noticeService.getAllNotices(member._id, { page:1, limit: 10, search: { noticeGroup: payload.noticeGroup } })
-
+      const notices = await this.noticeService.getAllNotices(member._id, { limit: 10, search: { noticeGroup: payload.noticeGroup } })
       const noticesMessage = {
         event: "notices",
         notices: notices
@@ -71,6 +69,7 @@ export class SocketGateway implements OnGatewayInit {
         text: payload,
         memberData: member
       }
+      this.messages.push(messagePayload)
       await this.emitMessage(messagePayload)
     }
   }
@@ -89,16 +88,26 @@ export class SocketGateway implements OnGatewayInit {
       memberData: member || null,
       action: "joined",
     }
-
+    this.messages.push(infoPayload)
     if (member) {
-      const notices = await this.noticeService.getAllNotices(member,{ page: 1, limit: 5, search: {} })
+      const notices = await this.noticeService.getAllNotices(member, { page: 1, limit: 5, search: {} })
       const noticePayload = {
         event: "notices",
         notices
       }
       await this.emitMessage(noticePayload)
     }
-    await this.broadCasting(client, infoPayload)
+    await this.emitMessage(infoPayload)
+
+    let reducedMessages = this.messages
+    if (this.messages.length > 5) {
+      reducedMessages = this.messages.splice(0, this.messages.length - (this.messages.length - 5))
+    }
+    const messagesPayload = {
+      event: "messages",
+      messages: reducedMessages
+    }
+    client.send(JSON.stringify(messagesPayload))
   }
 
   async retrieveAuth(req: any) {

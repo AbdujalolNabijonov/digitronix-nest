@@ -4,7 +4,7 @@ import { Member } from "../member/member";
 import { MeLiked } from "../like/like";
 
 @ObjectType()
-class MeFollowed {
+export class MeFollowed {
     @Field(() => String)
     followingId: ObjectId;
 

@@ -8,7 +8,7 @@ import { Message } from '../../libs/common';
 import { T } from '../../libs/types/general';
 import { Direction } from '../../libs/enums/common.enum';
 import { UpdateMemberInquiry } from '../../libs/dto/member/member.update';
-import { lookupAuthMemberLiked, shapeIntoMongoObjectId } from '../../libs/config';
+import { lookUpAuthMemberFollowed, lookupAuthMemberLiked, shapeIntoMongoObjectId } from '../../libs/config';
 import { MemberStatus } from '../../libs/enums/member';
 import { MemberType } from '../../libs/enums/member.enum';
 import { LikeService } from '../like/like.service';
@@ -17,6 +17,7 @@ import { LikeGroup } from '../../libs/enums/like.enum';
 import { ViewService } from '../view/view.service';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { ViewInput } from '../../libs/dto/view/view.input';
+import { FollowService } from '../follow/follow.service';
 
 @Injectable()
 export class MemberService {
@@ -46,7 +47,7 @@ export class MemberService {
 
         if (!member) { throw new Error(Message.NO_DATA_FOUND); }
         const isCorrectPassword = await this.authService.comparePassword(input.memberPassword, member.memberPassword);
-        if (!isCorrectPassword) { throw new BadRequestException(Message.WRONG_PASSWORD)}
+        if (!isCorrectPassword) { throw new BadRequestException(Message.WRONG_PASSWORD) }
         else if (member.memberStatus === MemberStatus.BLOCK) {
             throw new Error("You have been blocked!")
         } else {
@@ -58,10 +59,16 @@ export class MemberService {
     public async getMember(target: ObjectId, memberId: ObjectId): Promise<Member> {
         const search = {
             _id: target,
-            memberStatus: { $in: [MemberStatus.ACTIVE, MemberStatus.BLOCK] }
+            memberStatus: { $in: [MemberStatus.ACTIVE] }
         }
 
-        const member = await this.memberModel.findOne(search).exec();
+        const member = await this.memberModel.aggregate([
+            { $match: search },
+            lookUpAuthMemberFollowed({followerId:memberId, followingId:target})
+        ]).exec();
+
+        console.log(member)
+        if (!member[0]) throw new InternalServerErrorException(Message.NO_DATA_FOUND)
         if (memberId) {
             //like
             const inputLike: LikeInput = {
@@ -71,7 +78,7 @@ export class MemberService {
             }
             const likeExist = await this.likeService.checkExistence(inputLike);
             if (likeExist) {
-                member.meLiked = [{
+                member[0].meLiked = [{
                     likeTargetId: likeExist.likeTargetId,
                     memberId,
                     myFavorite: true
@@ -86,12 +93,11 @@ export class MemberService {
             const recordedView = await this.viewService.recordView(viewInput)
             if (recordedView) {
                 await this.memberModel.findOneAndUpdate({ _id: target }, { $inc: { memberViews: 1 } }).exec()
-                member.memberViews++
+                member[0].memberViews++
             }
             //follow
         }
-        if (!member) throw new InternalServerErrorException(Message.NO_DATA_FOUND)
-        return member
+        return member[0]
     }
 
     public async updateMember(input: UpdateMemberInquiry): Promise<Member> {

@@ -12,6 +12,7 @@ import { AuthModule } from '../auth/auth.module';
     MemberModule,
     AuthModule
   ],
-  providers: [FollowResolver, FollowService]
+  providers: [FollowResolver, FollowService],
+  exports:[FollowService]
 })
 export class FollowModule { }

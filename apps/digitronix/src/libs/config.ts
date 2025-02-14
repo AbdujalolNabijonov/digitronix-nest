@@ -105,11 +105,11 @@ export const lookupFollowerMemberData = {
 
 interface LookupAuthFollowed {
     followerId: T,
-    followingId: string,
+    followingId: any,
 }
 export const lookUpAuthMemberFollowed = (input: LookupAuthFollowed) => {
     const { followerId, followingId } = input
-    return {
+    return ({
         $lookup: {
             from: "follows",
             let: {
@@ -138,7 +138,7 @@ export const lookUpAuthMemberFollowed = (input: LookupAuthFollowed) => {
             ],
             as: "meFollowed"
         }
-    }
+    })
 }
 
 

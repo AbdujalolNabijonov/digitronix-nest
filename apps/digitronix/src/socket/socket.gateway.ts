@@ -9,10 +9,12 @@ import { MemberType } from '../libs/enums/member.enum';
 import { NoticeService } from '../components/notice/notice.service';
 import { NoticeInput } from '../libs/dto/notice/notice.input';
 import { shapeIntoMongoObjectId } from '../libs/config';
+import moment from 'moment';
 
 interface MessagePayload {
   event: string;
   text: string;
+  date: any;
   memberData: Member
 }
 
@@ -67,7 +69,8 @@ export class SocketGateway implements OnGatewayInit {
       const messagePayload: MessagePayload = {
         event: "message",
         text: payload,
-        memberData: member
+        memberData: member,
+        date: Date.now()
       }
       this.messages.push(messagePayload)
       await this.emitMessage(messagePayload)

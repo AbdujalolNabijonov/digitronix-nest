@@ -1,0 +1,33 @@
+services:
+  digitronix-api:
+    container_name: digitronix-api
+    restart: always
+    image: node:20.10.0
+    ports:
+      - 3001:3006
+    volumes:
+      - ./:/usr/src/digitronix
+    working_dir: /usr/src/digitronix
+
+    networks:
+      - monorepo-network
+    
+    command: bash -c "npm install && npm run build && npm run start:prod"
+  
+  digitronix-batch:
+    container_name: digitronix-batch
+    restart: always
+    image: node:20.10.0
+    ports:
+      - 3003:3008
+    volumes:
+      - ./:/usr/src/digitronix
+    working_dir: /usr/src/digitronix
+    networks: 
+      - monorepo-network
+    command: bash -c "npm install && npm run build && npm run start:batch:prod"
+
+networks:
+  monorepo-network:
+    driver: bridge
+    

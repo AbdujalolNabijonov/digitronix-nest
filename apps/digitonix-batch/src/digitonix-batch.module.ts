@@ -13,10 +13,8 @@ import MemberSchema from 'apps/digitronix/src/schema/Member.model';
     ConfigModule.forRoot({ envFilePath: process.env.NODE_ENV === "production" ? ".env.production" : ".env.development" }),
     DatabaseModule,
     ScheduleModule.forRoot(),
-    MongooseModule.forFeature([
-      {schema:productSchema,name:"Product"},
-      {schema:MemberSchema, name:"Member"}
-    ])
+    MongooseModule.forFeature([{schema:productSchema,name:"Product"}]),
+    MongooseModule.forFeature([{schema:MemberSchema,name:"Member"}])
   ],
   controllers: [DigitonixBatchController],
   providers: [DigitonixBatchService],

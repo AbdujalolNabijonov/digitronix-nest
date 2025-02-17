@@ -64,6 +64,7 @@ export class SocketGateway implements OnGatewayInit {
         event: "notices",
         notices: notices
       }
+      client.send(JSON.stringify(noticesMessage))
       await this.emitMessage(noticesMessage)
     } else {
       const messagePayload: MessagePayload = {

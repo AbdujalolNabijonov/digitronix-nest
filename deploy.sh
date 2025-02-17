@@ -1,3 +1,5 @@
 git reset --hard
 git checkout master
-git pull master
+git pull origin master
+
+docker compose up -d

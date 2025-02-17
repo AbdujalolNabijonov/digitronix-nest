@@ -11,12 +11,16 @@ import AppResolver from './app.resolver';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot(
+      { envFilePath: process.env.NODE_ENV === "production" ? ".env.production" : ".env.development" }
+    ),
     GraphQLModule.forRoot({
       driver: ApolloDriver,
-      playground: true,
       autoSchemaFile: true,
       uploads: false,
+      schema:true,
+      introspection: process.env.NODE_ENV !== "production", // Disable in production if needed
+      playground: process.env.NODE_ENV !== "production", 
       formatError: (error: any) => {
         const graphqlFormattedError = {
           code: error?.extensions.code,

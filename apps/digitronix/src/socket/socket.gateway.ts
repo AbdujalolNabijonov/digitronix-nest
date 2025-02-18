@@ -47,8 +47,8 @@ export class SocketGateway implements OnGatewayInit {
 
   @SubscribeMessage('message')
   async handleMessage(client: WebSocket, payload: any) {
-    const member = this.connectedClients.get(client) || null
-    if (payload.event === "notice") {
+    const member = this.connectedClients.get(client)
+    if (payload.event === "notice" && member) {
       const noticeInput: NoticeInput = {
         noticeTitle: payload.noticeTitle,
         noticeContent: payload.noticeContent,
@@ -75,13 +75,16 @@ export class SocketGateway implements OnGatewayInit {
       }
       this.messages.push(messagePayload)
       await this.emitMessage(messagePayload)
+      const messagesPayload = {
+        event: "messages",
+        messages: this.messages
+      }
+      await client.send(JSON.stringify(messagesPayload))
     }
   }
   async handleConnection(client: WebSocket, req: any) {
     const member = await this.retrieveAuth(req);
-    if (member && member.memberType !== MemberType.ADMIN) {
-      this.totalClients++;
-    }
+    this.totalClients++;
     this.connectedClients.set(client, member)
     const clientNick: string = member?.memberNick ?? "Guest"
     this.logger.verbose(`Connection [${clientNick}] & total [${this.totalClients}]`, "WebSocket");
@@ -102,14 +105,9 @@ export class SocketGateway implements OnGatewayInit {
       await this.emitMessage(noticePayload)
     }
     await this.emitMessage(infoPayload)
-
-    let reducedMessages = this.messages
-    if (this.messages.length > 5) {
-      reducedMessages = this.messages.splice(0, this.messages.length - (this.messages.length - 5))
-    }
     const messagesPayload = {
       event: "messages",
-      messages: reducedMessages
+      messages: this.messages
     }
     client.send(JSON.stringify(messagesPayload))
   }
@@ -145,9 +143,7 @@ export class SocketGateway implements OnGatewayInit {
 
   async handleDisconnect(client: WebSocket, req: any) {
     const member = this.connectedClients.get(client)
-    if (member && member.memberType !== MemberType.ADMIN) {
-      this.totalClients--
-    }
+    this.totalClients--
     const clientNick: string = member?.memberNick ?? "Guest"
     this.logger.verbose(`Connection [${clientNick}] & total [${this.totalClients}]`, "WebSocket");
 

@@ -22,7 +22,7 @@ import AppResolver from './app.resolver';
       playground: true,
       autoSchemaFile: true,
       uploads: false,
-      // introspection: process.env.NODE_ENV === "production" ? true : false,
+      introspection: process.env.NODE_ENV === "production" ? true : false,
       formatError: (error: any) => {
         const graphqlFormattedError = {
           code: error?.extensions.code,

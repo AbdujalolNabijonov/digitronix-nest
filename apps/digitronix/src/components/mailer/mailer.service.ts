@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { MailerService as NestMailerService } from "@nestjs-modules/mailer"
 import * as otpGenerator from 'otp-generator';
 import { Model } from 'mongoose';
@@ -27,6 +27,19 @@ export class MailerService {
             })
             await this.otpModel.create({ email, otp })
             return otp;
+        } catch (err: any) {
+            throw err
+        }
+    }
+
+    public async checkOTPConfirmation(otp:string):Promise<OTPModel>{
+        try {
+            const existOTP = await this.otpModel.findOne({otp});
+            if(!existOTP){
+                throw new NotFoundException("Invalid email otp code")
+            }else{
+                return await this.otpModel.findOneAndDelete({otp}).exec()
+            }
         } catch (err: any) {
             throw err
         }

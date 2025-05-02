@@ -17,6 +17,7 @@ import { ViewService } from '../view/view.service';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { ViewInput } from '../../libs/dto/view/view.input';
 import { MailerService } from '../mailer/mailer.service';
+import { OTPStatus } from '../../libs/dto/otp/otp';
 
 @Injectable()
 export class MemberService {
@@ -71,6 +72,11 @@ export class MemberService {
     public async requestVerifyEmail(email: string): Promise<{ message: string }> {
         await this.mailerService.verifyEmailOpt(email);
         return { message: 'OTP sent to email' }
+    }
+
+    public async checkOTPConfirmation(input: string): Promise<OTPStatus> {
+        const optData = await this.mailerService.checkOTPConfirmation(input);
+        return { email_verified: true }
     }
 
     public async getMember(target: ObjectId, memberId: ObjectId): Promise<Member> {

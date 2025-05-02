@@ -9,3 +9,9 @@ export class OTPModel {
     otp: string
 }
 
+
+@ObjectType()
+export class OTPStatus {
+    @Field(() => Boolean)
+    email_verified: boolean
+}

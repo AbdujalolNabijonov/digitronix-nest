@@ -16,6 +16,7 @@ import { Message } from '../../libs/common';
 import { createWriteStream } from 'fs';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { OptRequest } from '../../libs/dto/otp/otp.input';
+import { OTPStatus } from '../../libs/dto/otp/otp';
 
 
 @Resolver()
@@ -54,6 +55,14 @@ export class MemberResolver {
     ): Promise<OptRequest> {
         console.log("Mutation: Verifing Email");
         return await this.memberService.requestVerifyEmail(input)
+    }
+
+    @Mutation(() => OTPStatus)
+    public async checkOTPConfirmation(
+        @Args("input") input: string
+    ): Promise<OTPStatus> {
+        console.log("Query: OTP Confirmation");
+        return await this.memberService.checkOTPConfirmation(input)
     }
 
     @UseGuards(WithoutGuards)

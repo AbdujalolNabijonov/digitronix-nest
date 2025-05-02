@@ -88,3 +88,14 @@ export class MemberInquiry {
     @Field(() => MISearch)
     search: MISearch
 }
+
+@InputType()
+export class GoogleAuthLoginInput {
+    @IsNotEmpty()
+    @Field(() => String)
+    email: string
+
+    @IsNotEmpty()
+    @Field(() => String)
+    name: string
+}

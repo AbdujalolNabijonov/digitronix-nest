@@ -12,20 +12,22 @@ import AppResolver from './app.resolver';
 @Module({
   imports: [
     ConfigModule.forRoot(
-      { envFilePath: process.env.NODE_ENV === "production" ? ".env.production" : ".env.development" }
+      {
+        envFilePath: process.env.NODE_ENV === "production" ? ".env.production" : ".env.development",
+        isGlobal: true
+      }
     ),
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       playground: true,
       autoSchemaFile: true,
       uploads: false,
-      introspection: process.env.NODE_ENV === "production",
+      // introspection: process.env.NODE_ENV === "production" ? true : false,
       formatError: (error: any) => {
         const graphqlFormattedError = {
           code: error?.extensions.code,
           message: error.extensions?.execption?.response?.message || error.extensions.originalError?.message || error?.extensions?.response?.message || error?.message
         }
-        console.log("GRAPHQL GLOBAL ERR: ", graphqlFormattedError)
         return graphqlFormattedError;
       }
     }),

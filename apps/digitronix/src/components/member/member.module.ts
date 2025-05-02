@@ -6,13 +6,16 @@ import MemberSchema from '../../schema/Member.model';
 import { AuthModule } from '../auth/auth.module';
 import { LikeModule } from '../like/like.module';
 import { ViewModule } from '../view/view.module';
+import { MailerModule } from '../mailer/mailer.module';
+
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: "Member", schema: MemberSchema }]),
     AuthModule,
     LikeModule,
-    ViewModule
+    ViewModule,
+    MailerModule
   ],
   providers: [MemberResolver, MemberService],
   exports: [MemberService]

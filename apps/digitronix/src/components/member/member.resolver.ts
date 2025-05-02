@@ -1,8 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { MemberService } from './member.service';
-import { LoginInput, MemberInput, MemberInquiry } from '../../libs/dto/member/member.input';
+import { GoogleAuthLoginInput, LoginInput, MemberInput, MemberInquiry } from '../../libs/dto/member/member.input';
 import { Member, Members } from '../../libs/dto/member/member';
-import { UseGuards, UsePipes } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { Roles } from '../auth/decorators/auth.roles';
 import { MemberGroup } from '../../libs/enums/member';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -15,12 +15,15 @@ import { GraphQLUpload, FileUpload } from "graphql-upload"
 import { Message } from '../../libs/common';
 import { createWriteStream } from 'fs';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { OptRequest } from '../../libs/dto/otp/otp.input';
 
 
 @Resolver()
 export class MemberResolver {
-    constructor(private readonly memberService: MemberService) { }
-    
+    constructor(
+        private readonly memberService: MemberService
+    ) { }
+
     @Mutation(() => Member)
     public async signup(
         @Args("input") input: MemberInput
@@ -29,12 +32,28 @@ export class MemberResolver {
         return await this.memberService.signup(input)
     }
 
+    @Mutation(() => String)
+    public async googleAuthLogin(
+        @Args("input") input: GoogleAuthLoginInput
+    ): Promise<String> {
+        console.log("Mutation: Google Login");
+        return await this.memberService.googleAuthLogin(input)
+    }
+
     @Query(returns => Member)
     public async login(
         @Args("input") input: LoginInput
     ): Promise<Member | Error> {
         console.log("Query: Login")
         return await this.memberService.login(input)
+    }
+
+    @Mutation(() => OptRequest)
+    public async requestVerifyEmail(
+        @Args("input") input: string
+    ): Promise<OptRequest> {
+        console.log("Mutation: Verifing Email");
+        return await this.memberService.requestVerifyEmail(input)
     }
 
     @UseGuards(WithoutGuards)

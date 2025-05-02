@@ -100,7 +100,7 @@ export class Member {
 
 @ObjectType()
 class TotalCount {
-    @Field(() => Number, {nullable:true})
+    @Field(() => Number, { nullable: true })
     total?: number
 }
 

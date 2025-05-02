@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { Member, Members } from '../../libs/dto/member/member';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
-import { LoginInput, MemberInput, MemberInquiry } from '../../libs/dto/member/member.input';
+import { GoogleAuthLoginInput, LoginInput, MemberInput, MemberInquiry } from '../../libs/dto/member/member.input';
 import { AuthService } from '../auth/auth.service';
 import { Message } from '../../libs/common';
 import { T } from '../../libs/types/general';
@@ -10,14 +10,13 @@ import { Direction } from '../../libs/enums/common.enum';
 import { UpdateMemberInquiry } from '../../libs/dto/member/member.update';
 import { lookUpAuthMemberFollowed, lookupAuthMemberLiked, shapeIntoMongoObjectId } from '../../libs/config';
 import { MemberStatus } from '../../libs/enums/member';
-import { MemberType } from '../../libs/enums/member.enum';
 import { LikeService } from '../like/like.service';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { ViewService } from '../view/view.service';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { ViewInput } from '../../libs/dto/view/view.input';
-import { FollowService } from '../follow/follow.service';
+import { MailerService } from '../mailer/mailer.service';
 
 @Injectable()
 export class MemberService {
@@ -25,7 +24,8 @@ export class MemberService {
         @InjectModel("Member") private readonly memberModel: Model<Member>,
         private readonly authService: AuthService,
         private readonly likeService: LikeService,
-        private readonly viewService: ViewService
+        private readonly viewService: ViewService,
+        private readonly mailerService: MailerService
     ) { };
 
     public async signup(input: MemberInput): Promise<Member | Error> {
@@ -56,6 +56,23 @@ export class MemberService {
         }
     }
 
+    public async googleAuthLogin(input: GoogleAuthLoginInput): Promise<String> {
+        const exist = await this.memberModel.findOne({ memberEmail: input.email }).exec();
+        if (!exist) {
+            throw new Error(Message.NO_MEMBER_NICK);
+        } else if (exist.memberStatus === MemberStatus.BLOCK) {
+            throw new Error(Message.BLOCKED_USER)
+        }
+        const accessToken = await this.authService.jwtGenerator(exist);
+
+        return accessToken
+    }
+
+    public async requestVerifyEmail(email: string): Promise<{ message: string }> {
+        await this.mailerService.verifyEmailOpt(email);
+        return { message: 'OTP sent to email' }
+    }
+
     public async getMember(target: ObjectId, memberId: ObjectId): Promise<Member> {
         const search = {
             _id: target,
@@ -64,7 +81,7 @@ export class MemberService {
 
         const member = await this.memberModel.aggregate([
             { $match: search },
-            lookUpAuthMemberFollowed({followerId:memberId, followingId:target})
+            lookUpAuthMemberFollowed({ followerId: memberId, followingId: target })
         ]).exec();
 
         console.log(member)

@@ -21,7 +21,7 @@ class NSearch {
 
     @IsOptional()
     @Field(() => Boolean, { nullable: true })
-    nonRead: boolean
+    nonRead?: boolean
 }
 
 @InputType()

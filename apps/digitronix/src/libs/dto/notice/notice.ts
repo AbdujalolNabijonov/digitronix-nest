@@ -30,6 +30,19 @@ export class Notice {
     @Field(() => Date)
     updatedAt: Date
 }
+@ObjectType()
+export class CategoryCount {
+    @Field(() => Number)
+    all: number
+    @Field(() => Number)
+    product: number
+    @Field(() => Number)
+    article: number
+    @Field(() => Number)
+    follow: number
+    @Field(() => Number)
+    member: number
+}
 
 @ObjectType()
 export class Notices {
@@ -38,6 +51,9 @@ export class Notices {
 
     @Field(() => [ArticleTotal])
     metaCounter: ArticleTotal[]
+
+    @Field(() => CategoryCount)
+    categoryCount: CategoryCount
 }
 
 

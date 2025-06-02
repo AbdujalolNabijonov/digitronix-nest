@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from "bcryptjs"
 import { T } from '../../libs/types/general';
@@ -7,6 +7,7 @@ import { shapeIntoMongoObjectId } from '../../libs/config';
 
 @Injectable()
 export class AuthService {
+    public logger=new Logger("WARNING")
     constructor(private readonly jwtService: JwtService) { }
 
     //Hashing Password
@@ -36,10 +37,13 @@ export class AuthService {
     }
 
     public async jwtVerify(token: string): Promise<Member> {
-        const member: Member = await this.jwtService.verifyAsync(token);
-        member._id = shapeIntoMongoObjectId(member._id)
-        return member
-
+        try{
+            const member: Member = await this.jwtService.verifyAsync(token);
+            member._id = shapeIntoMongoObjectId(member._id)
+            return member
+        }catch(err:any){
+            this.logger.warn("Server is about to hack!!!")
+            return null
+        }
     }
-
 }

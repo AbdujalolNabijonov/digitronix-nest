@@ -7,11 +7,10 @@ import { DeleteNotice, Notice, Notices } from '../../libs/dto/notice/notice';
 import { NoticeService } from './notice.service';
 import { WithoutGuards } from '../auth/guards/without.guard';
 import { shapeIntoMongoObjectId } from '../../libs/config';
-import { NoticeInquiry } from '../../libs/dto/notice/notice.input';
+import { NoticeInquiry, ReadAll, ReadNotices } from '../../libs/dto/notice/notice.input';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { AuthMember } from '../auth/decorators/auth.member';
 import { ObjectId } from 'mongoose';
-import { NoticeGroup } from '../../libs/enums/notice.enum';
 
 @Resolver()
 export class NoticeResolver {
@@ -25,7 +24,7 @@ export class NoticeResolver {
         @AuthMember("_id") memberId: ObjectId
     ): Promise<Notices> {
         console.log("Query: getAllNotices")
-        return await this.noticeService.getAllNotices(memberId,input)
+        return await this.noticeService.getAllNotices(memberId, input)
     }
 
     @UseGuards(AuthGuard)
@@ -35,6 +34,26 @@ export class NoticeResolver {
     ): Promise<DeleteNotice> {
         console.log("Mutation: deleteTargetNotice")
         return await this.noticeService.deleteNotices(memberId)
+    }
+
+    @UseGuards(AuthGuard)
+    @Mutation(() => ReadNotices)
+    async readAllNotices(
+        @AuthMember("_id") memberId: ObjectId,
+        @Args("input") input: ReadAll
+    ): Promise<ReadNotices> {
+        console.log("Mutation: readAll")
+        return await this.noticeService.readAllNotices(memberId, input)
+    }
+
+    @UseGuards(AuthGuard)
+    @Mutation(() => Notice)
+    public async readTargetNotice(
+        @Args("input") input: string,
+        @AuthMember("_id") memberId: ObjectId
+    ): Promise<Notice> {
+        console.log("Mutation: readTargetNotice");
+        return await this.noticeService.readTargetNotice(memberId, input)
     }
 
     //Admin

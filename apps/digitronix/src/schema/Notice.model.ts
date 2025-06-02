@@ -12,7 +12,11 @@ const NoticeSchema = new Schema({
     },
     noticeGroup: {
         type: String,
-        enum:NoticeGroup
+        enum: NoticeGroup
+    },
+    noticeRead: {
+        type: Boolean,
+        default: false
     },
     memberId: {
         type: Schema.Types.ObjectId,

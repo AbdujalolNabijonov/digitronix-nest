@@ -1,8 +1,9 @@
-import { Field, InputType } from "@nestjs/graphql";
+import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { IsNotEmpty, IsOptional, Length } from "class-validator";
 import { Direction } from "../../enums/common.enum";
 import { ObjectId } from "mongoose";
 import { NoticeGroup } from "../../enums/notice.enum";
+import { Notice } from "./notice";
 
 @InputType()
 class NSearch {
@@ -17,6 +18,10 @@ class NSearch {
     @IsOptional()
     @Field(() => NoticeGroup, { nullable: true })
     noticeGroup?: NoticeGroup
+
+    @IsOptional()
+    @Field(() => Boolean, { nullable: true })
+    nonRead: boolean
 }
 
 @InputType()
@@ -64,4 +69,16 @@ export class NoticeInput {
     @IsOptional()
     @Field(() => String, { nullable: true })
     noticeTargetId?: ObjectId
+}
+
+@InputType()
+export class ReadAll {
+    @Field(() => [String])
+    listNotices: String[]
+}
+
+@ObjectType()
+export class ReadNotices {
+    @Field(() => [Notice])
+    list: Notice[]
 }
